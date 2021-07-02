@@ -3,7 +3,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
-group 'practice.goldberg'
+group 'leti.practice'
 version '0.1'
 
 repositories {
@@ -24,4 +24,4 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 
-mainClassName = 'practice.goldberg.App'
+mainClassName = 'leti.practice.App'

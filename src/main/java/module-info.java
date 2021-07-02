@@ -1,7 +1,7 @@
-module practice.goldberg {
+module leti.practice {
     requires javafx.controls;
     requires javafx.fxml;
     
-    opens practice.goldberg to javafx.fxml;
-    exports practice.goldberg;
+    opens leti.practice to javafx.fxml;
+    exports leti.practice;
 }
