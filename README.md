@@ -1,1 +1,1 @@
-# sbpetu-summer-practice-2021
+# goldberg-visualizer
