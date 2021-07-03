@@ -20,7 +20,7 @@ public class App extends Application {
         consoleHandler.setLevel(Level.ALL);
         consoleHandler.setFormatter(formatter);
         logger.setLevel(Level.ALL);
-        logger.addHandler(new ConsoleHandler());
+        logger.addHandler(consoleHandler);
         logger.setUseParentHandlers(false);
 
         launch(args);
