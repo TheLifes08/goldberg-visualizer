@@ -27,7 +27,7 @@ public class MainWindow {
     }
 
     public void showError(String content) {
-        logger.log(Level.SEVERE, "Error has occurred: {0}", content);
+        logger.log(Level.SEVERE, "Error test has occurred: {0}", content);
         showDialog(Alert.AlertType.ERROR, "Error Dialog", "An error has occurred!", content);
     }
 
