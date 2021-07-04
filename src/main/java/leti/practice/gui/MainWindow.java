@@ -21,6 +21,7 @@ public class MainWindow {
 
     public void showDialog(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
+        alert.initOwner(primaryStage);
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(content);
