@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leti.practice.gui.MainWindowController">
    <children>
       <VBox layoutX="103.0" layoutY="134.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -19,64 +27,78 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Файл">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Открыть граф с файла" />
-                        <MenuItem mnemonicParsing="false" text="Сохранить граф в файл" />
-                        <MenuItem mnemonicParsing="false" text="Выход" />
+                    <MenuItem fx:id="buttonOpen" mnemonicParsing="false" onAction="#buttonOpenPressed" text="Открыть граф с файла" />
+                        <MenuItem fx:id="buttonSave" mnemonicParsing="false" onAction="#buttonSavePressed" text="Сохранить граф в файл" />
+                        <MenuItem fx:id="buttonExit" mnemonicParsing="false" onAction="#buttonExitPressed" text="Выход" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Граф">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Очистить граф" />
-                  </items>
-                </Menu>
+                  <Menu mnemonicParsing="false" text="Параметры">
+                    <items>
+                        <RadioMenuItem fx:id="radiobuttonOriginalGraph" mnemonicParsing="false" onAction="#radiobuttonOriginalGraphSelected" selected="true" text="Исходный граф">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="networkVisualType" />
+                           </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem fx:id="radiobuttonResidualNetwork" mnemonicParsing="false" onAction="#radiobuttonResidualNetworkSelected" text="Остаточная сеть" toggleGroup="$networkVisualType" />
+                        <RadioMenuItem fx:id="radiobuttonHeightFunction" mnemonicParsing="false" onAction="#radiobuttonHeightFunctionSelected" text="Высотная функция" toggleGroup="$networkVisualType" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <CheckMenuItem fx:id="checkboxIntermediateMessages" mnemonicParsing="false" onAction="#checkboxIntermediateMessagesChecked" selected="true" text="Отладочные сообщения" />
+                    </items>
+                  </Menu>
                 <Menu mnemonicParsing="false" text="Помощь">
                   <items>
-                        <MenuItem mnemonicParsing="false" text="Справка" />
-                    <MenuItem mnemonicParsing="false" text="О программе" />
+                        <MenuItem fx:id="buttonHelp" mnemonicParsing="false" onAction="#buttonHelpPressed" text="Справка" />
+                    <MenuItem fx:id="buttonAbout" mnemonicParsing="false" onAction="#buttonAboutPressed" text="О программе" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
-            <SplitPane dividerPositions="0.705574912891986" orientation="VERTICAL" prefHeight="577.0" prefWidth="800.0">
+            <ToolBar prefHeight="40.0" prefWidth="200.0">
+              <items>
+                <Button fx:id="buttonStepBackward" mnemonicParsing="false" onAction="#buttonStepBackwardPressed" text="&lt;-" />
+                  <Button fx:id="buttonStepForward" mnemonicParsing="false" onAction="#buttonStepForwardPressed" text="-&gt;" />
+                  <Button fx:id="buttonRunAlgorithm" mnemonicParsing="false" onAction="#buttonRunAlgorithmPressed" text="Шаги до конца" />
+                  <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
+                  <Button fx:id="buttonAddEdge" mnemonicParsing="false" onAction="#buttonAddEdgePressed" text="Добавить ребро" />
+                  <Button fx:id="buttonRemoveEdge" mnemonicParsing="false" onAction="#buttonRemoveEdgePressed" text="Удалить ребро" />
+                  <Button fx:id="buttonClearGraph" mnemonicParsing="false" onAction="#buttonClearGraphPressed" text="Очистить граф" />
+              </items>
+            </ToolBar>
+            <SplitPane dividerPositions="0.6498257839721254" orientation="VERTICAL" prefHeight="577.0" prefWidth="800.0">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <SplitPane dividerPositions="0.20351758793969849" prefHeight="284.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <items>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <ScrollPane prefHeight="347.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="892.0">
                                  <children>
-                                    <Label layoutX="7.0" layoutY="6.0" text="Параметры:" />
-                                 </children></AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                 <children>
-                                    <TabPane layoutY="-2.0" prefHeight="377.0" prefWidth="631.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-2.0">
-                                      <tabs>
-                                        <Tab text="Граф">
-                                          <content>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                          </content>
-                                        </Tab>
-                                        <Tab text="Высотная функция">
-                                          <content>
-                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                          </content>
-                                        </Tab>
-                                          <Tab text="Параматры вершин и ребер">
-                                            <content>
-                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                                            </content>
-                                          </Tab>
-                                      </tabs>
-                                    </TabPane>
+                                    <Canvas height="281.0" width="638.0" />
                                  </children>
                               </AnchorPane>
-                          </items>
-                        </SplitPane>
+                          </content>
+                        </ScrollPane>
                      </children>
                   </AnchorPane>
-                <AnchorPane prefHeight="102.0" prefWidth="798.0">
+                <AnchorPane prefHeight="230.0" prefWidth="798.0">
                      <children>
-                        <TextArea editable="false" prefHeight="284.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <TabPane prefHeight="200.0" prefWidth="798.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <tabs>
+                            <Tab text="Консоль">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                       <children>
+                                          <TextArea fx:id="console" editable="false" prefHeight="156.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                              </content>
+                            </Tab>
+                              <Tab text="Параметры вершин и ребер">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
                      </children>
                   </AnchorPane>
               </items>
