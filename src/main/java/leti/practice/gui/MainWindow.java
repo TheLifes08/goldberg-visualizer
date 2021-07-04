@@ -3,6 +3,7 @@ package leti.practice.gui;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
@@ -18,29 +19,6 @@ import java.util.logging.Logger;
 public class MainWindow {
     private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
     private Stage primaryStage;
-
-    public void showDialog(Alert.AlertType alertType, String title, String header, String content) {
-        Alert alert = new Alert(alertType);
-        alert.initOwner(primaryStage);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    public void showError(String content) {
-        logger.log(Level.SEVERE, "Error has occurred. {0}", content);
-        showDialog(Alert.AlertType.ERROR, "Error Dialog", "An error has occurred!", content);
-    }
-
-    public void showErrorAndExit(String content) {
-        showError(content);
-        endApplication();
-    }
-
-    public void endApplication() {
-        Platform.exit();
-    }
 
     public MainWindow(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -89,4 +67,26 @@ public class MainWindow {
         primaryStage.show();
     }
 
+    public void showDialog(Alert.AlertType alertType, String title, String header, String content) {
+        Alert alert = new Alert(alertType);
+        alert.initOwner(primaryStage);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public void showError(String content) {
+        logger.log(Level.SEVERE, "Error has occurred. {0}", content);
+        showDialog(Alert.AlertType.ERROR, "Error Dialog", "An error has occurred!", content);
+    }
+
+    public void showErrorAndExit(String content) {
+        showError(content);
+        endApplication();
+    }
+
+    public void endApplication() {
+        Platform.exit();
+    }
 }

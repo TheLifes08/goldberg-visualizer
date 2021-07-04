@@ -11,36 +11,6 @@ public class MainWindowController {
 
     @FXML
     private TextArea console;
-    @FXML
-    private MenuItem buttonOpen;
-    @FXML
-    private MenuItem buttonSave;
-    @FXML
-    private MenuItem buttonExit;
-    @FXML
-    private RadioMenuItem radiobuttonOriginalGraph;
-    @FXML
-    private RadioMenuItem radiobuttonResidualNetwork;
-    @FXML
-    private RadioMenuItem radiobuttonHeightFunction;
-    @FXML
-    private CheckMenuItem checkboxIntermediateMessages;
-    @FXML
-    private MenuItem buttonHelp;
-    @FXML
-    private MenuItem buttonAbout;
-    @FXML
-    private Button buttonStepBackward;
-    @FXML
-    private Button buttonStepForward;
-    @FXML
-    private Button buttonRunAlgorithm;
-    @FXML
-    private Button buttonAddEdge;
-    @FXML
-    private Button buttonRemoveEdge;
-    @FXML
-    private Button buttonClearGraph;
 
     @FXML
     private void initialize() {

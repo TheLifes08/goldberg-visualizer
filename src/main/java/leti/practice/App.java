@@ -12,6 +12,7 @@ import java.util.logging.SimpleFormatter;
 
 public class App extends Application {
     private static final Logger logger = Logger.getLogger("leti.practice");
+    MainWindow mainWindow;
 
     public static void main(String[] args) {
         ConsoleHandler consoleHandler = new ConsoleHandler();
@@ -28,6 +29,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        MainWindow mainWindow = new MainWindow(stage);
+        mainWindow = new MainWindow(stage);
     }
 }
