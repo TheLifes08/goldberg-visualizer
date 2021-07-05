@@ -5,7 +5,6 @@ import javafx.scene.control.*;
 
 public class MainWindowController {
     private MainWindow mainWindow;
-    private StringBuilder consoleText;
     private ViewType viewType = ViewType.ORIGINAL_GRAPH;
     private boolean intermediateMessagesEnabled = true;
 
@@ -14,7 +13,7 @@ public class MainWindowController {
 
     @FXML
     private void initialize() {
-        consoleText = new StringBuilder();
+
     }
 
     @FXML
@@ -119,8 +118,6 @@ public class MainWindowController {
     }
 
     public void printMessageToConsole(String text) {
-        consoleText.append(text).append("\n");
-        console.setText(consoleText.toString());
-        console.setScrollTop(Double.POSITIVE_INFINITY);
+        console.appendText(text + "\n");
     }
 }
