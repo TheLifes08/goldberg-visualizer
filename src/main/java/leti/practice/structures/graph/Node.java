@@ -10,8 +10,9 @@ public class Node {
     public String getName(){
         return name;
     }
+
     public Node copy(){
-       return new Node(String.copyValueOf(name.toCharArray()));
+       return new Node(name);
     }
 
     @Override

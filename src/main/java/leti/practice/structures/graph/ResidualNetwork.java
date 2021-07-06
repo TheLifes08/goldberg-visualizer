@@ -16,8 +16,8 @@ public class ResidualNetwork<T extends Number> {
     private Node destination = null;
 
     private ResidualNetwork(Node source, Node destination, HashMap<Node, HashMap<Node, EdgeProperties<T>>> network, HashMap<Node, HashMap<Node, EdgeProperties<T>>> reverseNetwork, HashMap<Node, Integer> heights, HashMap<Node, T> surpluses){
-        this.source = source.copy();
-        this.destination = destination.copy();
+        this.source = source;
+        this.destination = destination;
         this.network = new HashMap<>();
         this.reverseNetwork = new HashMap<>();
         this.heights = new HashMap<>();
@@ -42,10 +42,8 @@ public class ResidualNetwork<T extends Number> {
         }
     }
 
-    public ResidualNetwork(HashMap<Node, HashMap<Node, EdgeProperties<T>>> graph, Node source, Node destination){
+    public ResidualNetwork(HashMap<Node, HashMap<Node, EdgeProperties<T>>> graph){
         this.network = graph;
-        this.source = source;
-        this.destination = destination;
         reverseNetwork = new HashMap<>();
         surpluses = new HashMap<>();
         heights = new HashMap<>();
@@ -70,6 +68,12 @@ public class ResidualNetwork<T extends Number> {
     public HashMap<Node, EdgeProperties<T>> getReverseNetworkEdges(Node key){
         return reverseNetwork.get(key);
     }
+    public HashMap<Node, Integer> getHeights(){
+        return heights;
+    }
+    public HashMap<Node, T> getSurpluses(){
+        return surpluses;
+    }
 
     public void addEdge(Node from, Node to, EdgeProperties<T> edgeProperties){
         /*add Edge*/
@@ -83,21 +87,21 @@ public class ResidualNetwork<T extends Number> {
             if (network.containsKey(from)) {
                 if (!network.get(from).containsKey(to)) {
                     network.get(from).put(to, edgeProperties);
-                    logger.log(Level.INFO, String.format("Edge {} {} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
+                    logger.log(Level.INFO, String.format("Edge {%s} {%s} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
                 }
             } else {
                 network.put(from, new HashMap<Node, EdgeProperties<T>>());
                 network.get(from).put(to, edgeProperties);
-                logger.log(Level.INFO, String.format("Edge {} {} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
+                logger.log(Level.INFO, String.format("Edge {%s} {%s} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
             }
             /*add reverse Edge*/
             if (reverseNetwork.containsKey(to)) {
-                if (!network.get(to).containsKey(from)) {
-                    network.get(to).put(from, edgeProperties);
+                if (!reverseNetwork.get(to).containsKey(from)) {
+                    reverseNetwork.get(to).put(from, edgeProperties);
                 }
             } else {
-                network.put(to, new HashMap<Node, EdgeProperties<T>>());
-                network.get(to).put(from, edgeProperties);
+                reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>());
+                reverseNetwork.get(to).put(from, edgeProperties);
             }
         }
     }
@@ -106,10 +110,16 @@ public class ResidualNetwork<T extends Number> {
         /*delete edge*/
         if(network.containsKey(from)){
             network.get(from).remove(to);
+            if(network.get(from).size() == 0){ //если других рёбер больше нет
+                network.remove(from);
+            }
         }
-        else {logger.log(Level.INFO, String.format("No Edge {} {}", from.getName(), to.getName()));}
+        else {logger.log(Level.INFO, String.format("No Edge {%s} {%s}", from.getName(), to.getName()));}
         if(reverseNetwork.containsKey(to)){
             reverseNetwork.get(to).remove(from);
+            if(reverseNetwork.get(to).size() == 0){
+                reverseNetwork.remove(to);
+            }
         }
     }
     public void setSource(Node source){
@@ -124,4 +134,18 @@ public class ResidualNetwork<T extends Number> {
         return  new ResidualNetwork<T>(source, destination, network, reverseNetwork, heights, surpluses);
     }
 
+    public void printNetwork(){
+        for (Node from : network.keySet()) {
+            for (Node to : network.get(from).keySet()) {
+                System.out.println(from.getName()+" "+to.getName()+" "+network.get(from).get(to).getCapacity());
+            }
+        }
+        System.out.println("Reverse Edges:");
+        for (Node from : reverseNetwork.keySet()) {
+            for (Node to : reverseNetwork.get(from).keySet()) {
+                System.out.println(from.getName()+" "+to.getName()+" "+reverseNetwork.get(from).get(to).getCapacity());
+            }
+        }
+        System.out.println();
+    }
 }
