@@ -1,6 +1,7 @@
-package leti.practice.model.graph;
+package leti.practice.structures.graph;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,30 @@ public class ResidualNetwork<T extends Number> {
     private ResidualNetwork(Node source, Node destination, HashMap<Node, HashMap<Node, EdgeProperties<T>>> network, HashMap<Node, HashMap<Node, EdgeProperties<T>>> reverseNetwork, HashMap<Node, Integer> heights, HashMap<Node, T> surpluses){
         this.source = source.copy();
         this.destination = destination.copy();
+        this.network = new HashMap<>();
+        this.reverseNetwork = new HashMap<>();
+        this.heights = new HashMap<>();
+        this.surpluses = new HashMap<>();
+        for(Node from : network.keySet()){
+            this.network.put(from.copy(), new HashMap<>());
+            for (Node to : network.get(from).keySet()){
+                this.network.get(from).put(to.copy(), network.get(from).get(to).copy());
+            }
+        }
+        for(Node from : reverseNetwork.keySet()){
+            this.reverseNetwork.put(from.copy(), new HashMap<>());
+            for (Node to : reverseNetwork.get(from).keySet()){
+                this.reverseNetwork.get(from).put(to.copy(), reverseNetwork.get(from).get(to).copy());
+            }
+        }
+        for (Map.Entry<Node, Integer> entry : heights.entrySet()){
+            this.heights.put(entry.getKey().copy(), Integer.valueOf(entry.getValue().intValue()));
+        }
+        for (Map.Entry<Node, T> entry : surpluses.entrySet()){
+            this.surpluses.put(entry.getKey().copy(), entry.getValue());
+        }
     }
+
     public ResidualNetwork(HashMap<Node, HashMap<Node, EdgeProperties<T>>> graph, Node source, Node destination){
         this.network = graph;
         this.source = source;
@@ -49,24 +73,32 @@ public class ResidualNetwork<T extends Number> {
 
     public void addEdge(Node from, Node to, EdgeProperties<T> edgeProperties){
         /*add Edge*/
-        if(network.containsKey(from)){
-            if(!network.get(from).containsKey(to)) {
+        if(from!=null && to!=null && edgeProperties!=null) {
+            if (to.equals(source)) {
+                source = from;
+            }
+            if (from.equals(destination)) {
+                destination = to;
+            }
+            if (network.containsKey(from)) {
+                if (!network.get(from).containsKey(to)) {
+                    network.get(from).put(to, edgeProperties);
+                    logger.log(Level.INFO, String.format("Edge {} {} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
+                }
+            } else {
+                network.put(from, new HashMap<Node, EdgeProperties<T>>());
                 network.get(from).put(to, edgeProperties);
                 logger.log(Level.INFO, String.format("Edge {} {} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
             }
-        }else {
-            network.put(from, new HashMap<Node, EdgeProperties<T>>());
-            network.get(from).put(to, edgeProperties);
-            logger.log(Level.INFO, String.format("Edge {} {} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
-        }
-        /*add reverse Edge*/
-        if(reverseNetwork.containsKey(to)){
-            if(!network.get(to).containsKey(from)) {
+            /*add reverse Edge*/
+            if (reverseNetwork.containsKey(to)) {
+                if (!network.get(to).containsKey(from)) {
+                    network.get(to).put(from, edgeProperties);
+                }
+            } else {
+                network.put(to, new HashMap<Node, EdgeProperties<T>>());
                 network.get(to).put(from, edgeProperties);
             }
-        }else {
-            network.put(to, new HashMap<Node, EdgeProperties<T>>());
-            network.get(to).put(from, edgeProperties);
         }
     }
 

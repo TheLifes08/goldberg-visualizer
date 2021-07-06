@@ -1,4 +1,4 @@
-package leti.practice.model.graph;
+package leti.practice.structures.graph;
 
 import java.util.Objects;
 
@@ -10,10 +10,10 @@ public class EdgeProperties<T extends Number> {
         this.capacity = capacity;
         this.flow = flow;
     }
-
-    /*public EdgeProperties<T> copy(){
+   /*не уверен что правильно копировать будет надо тестить*/
+    public EdgeProperties<T> copy(){
         return new EdgeProperties<T>(capacity, flow);
-    }*/
+    }
     public T getFlow() {
         return flow;
     }

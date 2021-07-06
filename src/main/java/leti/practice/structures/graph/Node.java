@@ -1,4 +1,4 @@
-package leti.practice.model.graph;
+package leti.practice.structures.graph;
 
 import java.util.Objects;
 
