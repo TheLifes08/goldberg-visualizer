@@ -31,7 +31,7 @@ public class Controller {
         networkViewPainter = new NetworkViewPainter();
         residualNetworkViewPainter = new ResidualNetworkViewPainter();
         heightFunctionViewPainter = new HeightFunctionViewPainter();
-        network = new ResidualNetwork<Double>(new HashMap<>());
+        network = new ResidualNetwork<Double>();
         viewPainter = residualNetworkViewPainter;
 
         // NETWORK TEST INPUT

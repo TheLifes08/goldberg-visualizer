@@ -29,6 +29,8 @@ public class MainWindow {
         this.primaryStage = primaryStage;
 
         primaryStage.setTitle("Goldberg Visualizer");
+        primaryStage.setWidth(1000);
+        primaryStage.setHeight(800);
 
         // Setting icon
         try (InputStream inputStream = App.class.getResourceAsStream("/icons/app.png")) {

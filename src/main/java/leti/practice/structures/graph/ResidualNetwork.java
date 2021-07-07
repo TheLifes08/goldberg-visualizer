@@ -71,7 +71,7 @@ public class ResidualNetwork<T extends Number> {
     public void addEdge(Node from, Node to, EdgeProperties<T> edgeProperties){
         /*add Edge*/
         if(from!=null && to!=null && edgeProperties!=null) {
-            Byte zero = 0;
+            Double zero = 0.0;
             if (to.equals(source)) {
                 source = from;
             }
