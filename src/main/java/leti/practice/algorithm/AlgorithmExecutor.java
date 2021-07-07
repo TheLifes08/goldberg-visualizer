@@ -113,7 +113,7 @@ public class AlgorithmExecutor {
                                     network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
-                                    logger.log(Level.INFO, "Make push with node {0}.", node.getName());
+                                    logger.log(Level.INFO, "Make push with node "+ node.getName());
                                     return true;
                                 }
                             }
@@ -129,7 +129,7 @@ public class AlgorithmExecutor {
                                     network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
-                                    logger.log(Level.INFO, "Make push with node {0}.", node.getName());
+                                    logger.log(Level.INFO, "Make push with node " + node.getName());
                                     return true;
                                 }
                             }
@@ -152,11 +152,11 @@ public class AlgorithmExecutor {
                         for(Node to :network.getNetworkEdges(node).keySet()){
                             //if(!to.equals(network.getDestination())) {
                                 heights.add(network.getHeights().get(to));
-                                if(network.getHeights().get(node) > network.getHeights().get(to)){
+                                if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                     flag = true;
                                     break;
                                 }
-                            //}
+                           // }
                         }
                         if(network.getReverseNetworkNodes().contains(node) && !flag){
                             for (Node to : network.getReverseNetworkEdges(node).keySet()){
@@ -169,7 +169,7 @@ public class AlgorithmExecutor {
                         }
                         if(!flag){
                             network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
-                            logger.log(Level.INFO, "Make relabel with node {0}.", node.getName());
+                            logger.log(Level.INFO, "Make relabel with node " + node.getName());
                             return true;
                         }
                     }if(network.getReverseNetworkNodes().contains(node)){
@@ -204,7 +204,7 @@ public class AlgorithmExecutor {
     }
 
     public boolean nextStep(){
-        if(isNetworkCorrect) {
+        if(isNetworkCorrect && !isAlgorithmEnd) {
             networkStates.add(network.copy());
             if (relabel()) {
                 return true;
@@ -214,6 +214,7 @@ public class AlgorithmExecutor {
             }
             isAlgorithmEnd = true;
         }
+        logger.log(Level.INFO, "END ALGORYTM");
         return false;
     }
 
