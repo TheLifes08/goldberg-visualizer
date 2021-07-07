@@ -53,7 +53,7 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <ToolBar prefHeight="40.0" prefWidth="200.0">
+            <ToolBar>
               <items>
                 <Button fx:id="buttonStepBackward" mnemonicParsing="false" onAction="#buttonStepBackwardPressed" text="&lt;-" />
                   <Button fx:id="buttonStepForward" mnemonicParsing="false" onAction="#buttonStepForwardPressed" text="-&gt;" />
@@ -64,15 +64,15 @@
                   <Button fx:id="buttonClearGraph" mnemonicParsing="false" onAction="#buttonClearGraphPressed" text="Очистить граф" />
               </items>
             </ToolBar>
-            <SplitPane dividerPositions="0.6498257839721254" orientation="VERTICAL" prefHeight="577.0" prefWidth="800.0">
+            <SplitPane dividerPositions="0.6498257839721254" maxHeight="1.7976931348623157E308" orientation="VERTICAL" prefHeight="1000.0">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <ScrollPane prefHeight="347.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ScrollPane fx:id="canvasScrollPane" prefHeight="347.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                           <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="513.0" prefWidth="892.0">
+                            <AnchorPane minHeight="0.0" minWidth="0.0">
                                  <children>
-                                    <Canvas height="281.0" width="638.0" />
+                                    <Canvas fx:id="canvas" height="100.0" width="100.0" />
                                  </children>
                               </AnchorPane>
                           </content>

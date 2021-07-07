@@ -1,7 +1,21 @@
 package leti.practice.gui;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.geometry.VPos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.text.TextAlignment;
+import leti.practice.view.LineType;
+import leti.practice.view.ResidualNetworkViewPainter;
+
+import java.util.concurrent.atomic.AtomicReference;
+
 
 public class MainWindowController {
     private MainWindow mainWindow;
@@ -12,8 +26,36 @@ public class MainWindowController {
     private TextArea console;
 
     @FXML
-    private void initialize() {
+    private Canvas canvas;
 
+    @FXML
+    private ScrollPane canvasScrollPane;
+
+    // TEST
+    private ResidualNetworkViewPainter painter;
+
+    @FXML
+    private void initialize() {
+        // TEST
+        painter = new ResidualNetworkViewPainter();
+        painter.setCanvas(canvas);
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
+
+        painter.paintEdge(250, 100, 100, 250, "0", LineType.STRAIGHT);
+        painter.paintEdge(100, 250, 250, 100, "0", LineType.ARC);
+        painter.paintEdge(250, 100, 100, 250, "0", LineType.ARC);
+        painter.paintEdge(100, 250, 250, 100, "0", LineType.STRAIGHT);
+        painter.paintEdge(100, 250, 250, 400, "0", LineType.STRAIGHT);
+        painter.paintEdge(250, 400, 400, 250, "0", LineType.STRAIGHT);
+        painter.paintEdge(400, 250, 250, 100, "0", LineType.STRAIGHT);
+
+        painter.paintNode(250, 100, "A");
+        painter.paintNode(100, 250, "B");
+        painter.paintNode(400, 250, "C");
+        painter.paintNode(250, 400, "D");
     }
 
     @FXML
@@ -110,6 +152,8 @@ public class MainWindowController {
 
     @FXML
     private void buttonClearGraphPressed() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         printMessageToConsole("Clear graph button pressed!");
     }
 
