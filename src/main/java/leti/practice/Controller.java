@@ -38,7 +38,7 @@ public class Controller {
         network.addEdge(new Node("a"), new Node("b"), new EdgeProperties<>(5.0, 0.0));
         network.addEdge(new Node("a"), new Node("c"), new EdgeProperties<>(7.0, 0.0));
         network.addEdge(new Node("b"), new Node("a"), new EdgeProperties<>(5.0, 0.0));
-        network.addEdge(new Node("b"), new Node("d"), new EdgeProperties<>(0.0, 0.0));
+        //network.addEdge(new Node("b"), new Node("d"), new EdgeProperties<>(0.0, 0.0));
         network.addEdge(new Node("c"), new Node("a"), new EdgeProperties<>(7.0, 0.0));
         network.addEdge(new Node("c"), new Node("f"), new EdgeProperties<>(12.0, 0.0));
         network.addEdge(new Node("d"), new Node("e"), new EdgeProperties<>(9.0, 0.0));

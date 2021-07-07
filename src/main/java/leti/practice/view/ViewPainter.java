@@ -76,10 +76,20 @@ public abstract class ViewPainter {
         double deltaX = sign_1 * distanceY * indent / distance;
         double deltaY = sign_2 * distanceX * indent / distance;
 
-        double new_sx = sx + deltaX;
-        double new_dx = dx + deltaX;
-        double new_sy = sy + deltaY;
-        double new_dy = dy + deltaY;
+        double new_sx, new_dx, new_sy, new_dy;
+
+        if (lineType == LineType.STRAIGHT) {
+             new_sx = sx + deltaX;
+             new_dx = dx + deltaX;
+             new_sy = sy + deltaY;
+             new_dy = dy + deltaY;
+        } else {
+             new_sx = sx - deltaX;
+             new_dx = dx - deltaX;
+             new_sy = sy - deltaY;
+             new_dy = dy - deltaY;
+        }
+
         double centerX = (Math.max(new_dx, new_sx) + Math.min(new_dx, new_sx)) / 2;
         double centerY = (Math.max(new_dy, new_sy) + Math.min(new_dy, new_sy)) / 2;
 
@@ -97,18 +107,18 @@ public abstract class ViewPainter {
             gc.setLineDashes(5);
             gc.beginPath();
             gc.moveTo(new_sx, new_sy);
-            gc.quadraticCurveTo(centerX + deltaX * arcCurvature, centerY + deltaY * arcCurvature, new_dx, new_dy);
+            gc.quadraticCurveTo(centerX - deltaX * arcCurvature, centerY - deltaY * arcCurvature, new_dx, new_dy);
             gc.stroke();
             gc.setLineDashes(0);
 
-            double arcCenterX = centerX + 3 * deltaX;
-            double arcCenterY = centerY + 3 * deltaY;
+            double arcCenterX = centerX - 3 * deltaX;
+            double arcCenterY = centerY - 3 * deltaY;
 
             gc.strokeLine(arcCenterX, arcCenterY,
                     arcCenterX + arrowRatio * (deltaX - deltaY), arcCenterY + arrowRatio * (deltaY + deltaX));
             gc.strokeLine(arcCenterX, arcCenterY, arcCenterX + arrowRatio * (-deltaX - deltaY),
                     arcCenterY + arrowRatio * (-deltaY + deltaX));
-            paintText(centerX + deltaX * (arcCurvature - 1), centerY + deltaY * (arcCurvature - 1), info, Color.RED);
+            paintText(centerX - deltaX * (arcCurvature - 1), centerY - deltaY * (arcCurvature - 1), info, Color.RED);
         }
     }
 
