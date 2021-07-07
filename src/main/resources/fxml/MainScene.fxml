@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leti.practice.gui.MainWindowController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="leti.practice.gui.MainWindowController">
    <children>
       <VBox layoutX="103.0" layoutY="134.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -27,25 +27,29 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Файл">
                   <items>
-                    <MenuItem fx:id="buttonOpen" mnemonicParsing="false" onAction="#buttonOpenPressed" text="Открыть граф с файла" />
-                        <MenuItem fx:id="buttonSave" mnemonicParsing="false" onAction="#buttonSavePressed" text="Сохранить граф в файл" />
+                    <MenuItem fx:id="buttonLoad" mnemonicParsing="false" onAction="#buttonLoadPressed" text="Загрузить сеть..." />
+                        <MenuItem fx:id="buttonSave" mnemonicParsing="false" onAction="#buttonSavePressed" text="Сохранить сеть..." />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="buttonExit" mnemonicParsing="false" onAction="#buttonExitPressed" text="Выход" />
                   </items>
                 </Menu>
-                  <Menu mnemonicParsing="false" text="Параметры">
+                  <Menu mnemonicParsing="false" text="Вид">
                     <items>
-                        <RadioMenuItem fx:id="radiobuttonOriginalGraph" mnemonicParsing="false" onAction="#radiobuttonOriginalGraphSelected" selected="true" text="Исходный граф">
+                        <RadioMenuItem fx:id="radiobuttonOriginalGraph" mnemonicParsing="false" onAction="#radiobuttonOriginalNetworkSelected" selected="true" text="Исходная сеть">
                            <toggleGroup>
                               <ToggleGroup fx:id="networkVisualType" />
                            </toggleGroup>
                         </RadioMenuItem>
                         <RadioMenuItem fx:id="radiobuttonResidualNetwork" mnemonicParsing="false" onAction="#radiobuttonResidualNetworkSelected" text="Остаточная сеть" toggleGroup="$networkVisualType" />
                         <RadioMenuItem fx:id="radiobuttonHeightFunction" mnemonicParsing="false" onAction="#radiobuttonHeightFunctionSelected" text="Высотная функция" toggleGroup="$networkVisualType" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <CheckMenuItem fx:id="checkboxIntermediateMessages" mnemonicParsing="false" onAction="#checkboxIntermediateMessagesChecked" selected="true" text="Отладочные сообщения" />
                     </items>
                   </Menu>
-                <Menu mnemonicParsing="false" text="Помощь">
+                  <Menu mnemonicParsing="false" text="Параметры">
+                    <items>
+                        <CheckMenuItem fx:id="checkboxIntermediateMessages" mnemonicParsing="false" onAction="#checkboxIntermediateMessagesChecked" selected="true" text="Промежуточные сообщения" />
+                    </items>
+                  </Menu>
+                <Menu mnemonicParsing="false" text="Справка">
                   <items>
                         <MenuItem fx:id="buttonHelp" mnemonicParsing="false" onAction="#buttonHelpPressed" text="Справка" />
                     <MenuItem fx:id="buttonAbout" mnemonicParsing="false" onAction="#buttonAboutPressed" text="О программе" />
@@ -57,11 +61,11 @@
               <items>
                 <Button fx:id="buttonStepBackward" mnemonicParsing="false" onAction="#buttonStepBackwardPressed" text="&lt;-" />
                   <Button fx:id="buttonStepForward" mnemonicParsing="false" onAction="#buttonStepForwardPressed" text="-&gt;" />
-                  <Button fx:id="buttonRunAlgorithm" mnemonicParsing="false" onAction="#buttonRunAlgorithmPressed" text="Шаги до конца" />
+                  <Button fx:id="buttonRunAlgorithm" mnemonicParsing="false" onAction="#buttonRunAlgorithmPressed" text="Шаги до завершения" />
                   <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
                   <Button fx:id="buttonAddEdge" mnemonicParsing="false" onAction="#buttonAddEdgePressed" text="Добавить ребро" />
                   <Button fx:id="buttonRemoveEdge" mnemonicParsing="false" onAction="#buttonRemoveEdgePressed" text="Удалить ребро" />
-                  <Button fx:id="buttonClearGraph" mnemonicParsing="false" onAction="#buttonClearGraphPressed" text="Очистить граф" />
+                  <Button fx:id="buttonClearNetwork" mnemonicParsing="false" onAction="#buttonClearNetworkPressed" text="Очистить сеть" />
               </items>
             </ToolBar>
             <SplitPane dividerPositions="0.6498257839721254" maxHeight="1.7976931348623157E308" orientation="VERTICAL" prefHeight="1000.0">

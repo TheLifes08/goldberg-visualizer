@@ -7,7 +7,7 @@ public class SetViewCommand implements Command {
     private final Controller controller;
     private final ViewType viewType;
 
-    SetViewCommand(Controller controller, ViewType viewType) {
+    public SetViewCommand(Controller controller, ViewType viewType) {
         this.controller = controller;
         this.viewType = viewType;
     }

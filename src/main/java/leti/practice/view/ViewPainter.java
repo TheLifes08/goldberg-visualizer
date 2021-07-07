@@ -1,9 +1,11 @@
 package leti.practice.view;
 
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.TextAlignment;
 import leti.practice.structures.graph.ResidualNetwork;
 
 public abstract class ViewPainter {
@@ -14,10 +16,10 @@ public abstract class ViewPainter {
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
-
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
         gc.setLineWidth(2);
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
     }
 
     public Canvas getCanvas() {

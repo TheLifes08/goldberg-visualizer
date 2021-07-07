@@ -4,13 +4,18 @@ import leti.practice.Controller;
 
 public class StepForwardCommand implements Command {
     private final Controller controller;
+    private boolean result;
 
-    StepForwardCommand(Controller controller) {
+    public StepForwardCommand(Controller controller) {
         this.controller = controller;
+    }
+
+    public boolean getResult() {
+        return result;
     }
 
     @Override
     public void execute() {
-        controller.stepForward();
+        result = controller.stepForward();
     }
 }

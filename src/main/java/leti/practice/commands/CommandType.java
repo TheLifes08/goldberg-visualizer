@@ -3,7 +3,9 @@ package leti.practice.commands;
 public enum CommandType {
     LOAD_NETWORK,
     SAVE_NETWORK,
-    SET_VIEW,
+    SET_VIEW_ORIGINAL_NETWORK,
+    SET_VIEW_RESIDUAL_NETWORK,
+    SET_VIEW_HEIGHT_FUNCTION,
     STEP_FORWARD,
     STEP_BACKWARD,
     ADD_EDGE,
