@@ -54,14 +54,15 @@ public class AlgorithmExecutor {
     }
 
     private boolean checkNetwork(){
+        logger.log(Level.INFO, "Checking correction of the network\n");
         for(Node from : network.getNetworkNodes()){
             for (Node to : network.getNetworkEdges(from).keySet()){
                 if(network.getNetworkEdges(from).get(to).getCapacity() < 0.0
                         || network.getNetworkEdges(from).get(to).getFlow() < 0.0
                         || network.getNetworkEdges(from).get(to).getFlow() >
                         network.getNetworkEdges(from).get(to).getCapacity()){
+                    logger.log(Level.INFO, "Find error edge "+ from.getName()+" "+to.getName());
                     return false;
-
                 }
             }
         }
@@ -107,6 +108,7 @@ public class AlgorithmExecutor {
                                 if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
                                     logger.log(Level.INFO, String.format("Start pushing Node {%s}",node.getName()));
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getNetworkEdges(node).get(to).getCapacity() - network.getNetworkEdges(node).get(to).getFlow());
+                                    logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
                                     network.getNetworkEdges(node).get(to).setFlow(network.getNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
                                     network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() + availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
@@ -122,6 +124,7 @@ public class AlgorithmExecutor {
                             if(network.getReverseNetworkEdges(node).get(to).getFlow()> 0.0){
                                 if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getFlow());
+                                    logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
                                     network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() - availableAmountOfFlow);
                                     network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
@@ -147,13 +150,13 @@ public class AlgorithmExecutor {
                     if(network.getNetworkNodes().contains(node)){
                         ArrayList<Integer> heights = new ArrayList<>();
                         for(Node to :network.getNetworkEdges(node).keySet()){
-                            if(!to.equals(network.getDestination())) {
+                            //if(!to.equals(network.getDestination())) {
                                 heights.add(network.getHeights().get(to));
                                 if(network.getHeights().get(node) > network.getHeights().get(to)){
                                     flag = true;
                                     break;
                                 }
-                            }
+                            //}
                         }
                         if(network.getReverseNetworkNodes().contains(node) && !flag){
                             for (Node to : network.getReverseNetworkEdges(node).keySet()){
@@ -180,13 +183,13 @@ public class AlgorithmExecutor {
                         }
                         if(network.getNetworkNodes().contains(node) && !flag){
                             for (Node to : network.getNetworkEdges(node).keySet()){
-                                if(!to.equals(network.getDestination())) {
+                                //if(!to.equals(network.getDestination())) {
                                     heights.add(network.getHeights().get(to));
                                     if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                         flag = true;
                                         break;
                                     }
-                                }
+                                //}
                             }
                         }
                         if(!flag){
@@ -203,10 +206,10 @@ public class AlgorithmExecutor {
     public boolean nextStep(){
         if(isNetworkCorrect) {
             networkStates.add(network.copy());
-            if (push()) {
+            if (relabel()) {
                 return true;
             }
-            if (relabel()) {
+            if (push()) {
                 return true;
             }
             isAlgorithmEnd = true;
