@@ -50,7 +50,7 @@ public class AlgorithmExecutor {
                 maxFlow += network.getReverseNetworkEdges(network.getDestination()).get(dest).getFlow();
             }
         }
-        return maxFlow;
+        return maxFlow*-1;
     }
 
     private boolean checkNetwork(){
@@ -110,7 +110,7 @@ public class AlgorithmExecutor {
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getNetworkEdges(node).get(to).getCapacity() - network.getNetworkEdges(node).get(to).getFlow());
                                     logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
                                     network.getNetworkEdges(node).get(to).setFlow(network.getNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
-                                    network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() + availableAmountOfFlow);
+                                    network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
                                     logger.log(Level.INFO, "Make push with node {0}.", node.getName());
@@ -121,11 +121,11 @@ public class AlgorithmExecutor {
                     }if(network.getReverseNetworkNodes().contains(node)){
                         for (Node to : network.getReverseNetworkEdges(node).keySet()){
                             //если можно пропустить поток через обратное ребро
-                            if(network.getReverseNetworkEdges(node).get(to).getFlow()> 0.0){
+                            if(network.getReverseNetworkEdges(node).get(to).getFlow()< 0.0){
                                 if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
-                                    double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getFlow());
+                                    double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getCapacity() - network.getReverseNetworkEdges(node).get(to).getFlow());
                                     logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
-                                    network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() - availableAmountOfFlow);
+                                    network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
                                     network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
