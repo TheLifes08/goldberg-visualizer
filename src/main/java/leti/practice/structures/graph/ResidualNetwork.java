@@ -2,6 +2,7 @@ package leti.practice.structures.graph;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,6 +131,15 @@ public class ResidualNetwork<T extends Number> {
         /*think about more functional or check correction*/
         this.destination = destination;
     }
+
+    public Node getSource(){
+        return source;
+    }
+
+    public Node getDestination(){
+        return destination;
+    }
+
     public ResidualNetwork<T> copy(){
         return  new ResidualNetwork<T>(source, destination, network, reverseNetwork, heights, surpluses);
     }
@@ -147,5 +157,18 @@ public class ResidualNetwork<T extends Number> {
             }
         }
         System.out.println();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResidualNetwork<?> that = (ResidualNetwork<?>) o;
+        return Objects.equals(network, that.network) && Objects.equals(reverseNetwork, that.reverseNetwork) && Objects.equals(surpluses, that.surpluses) && Objects.equals(heights, that.heights) && Objects.equals(source, that.source) && Objects.equals(destination, that.destination);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(network, reverseNetwork, surpluses, heights, source, destination);
     }
 }
