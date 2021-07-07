@@ -14,22 +14,22 @@ public class AlgorithmExecutor {
     private ArrayList<ResidualNetwork<Double>> networkStates;
     private double maxFlow;
     private boolean isNetworkCorrect;
-    private boolean isAlgprithmEnd;
+    private boolean isAlgorithmEnd;
     private HashSet<Node> amountOfNodes;
     public AlgorithmExecutor(){
         network = null;
         networkStates = null;
         maxFlow = 0.0;
         isNetworkCorrect = false;
-        isAlgprithmEnd = false;
+        isAlgorithmEnd = false;
     }
     public boolean setNetwork(ResidualNetwork<Double> network){
         if(network==null) {
             logger.log(Level.INFO, "Error network is empty\n");
-            return false;
+            throw new NullPointerException();
         }
         if(network.getSource()== null && network.getDestination()==null){
-            return false;
+            throw new NullPointerException();
         }
         this.network = null;
         this.network = network; //могу копировать, могу не копировать, надо обсудить
@@ -45,7 +45,7 @@ public class AlgorithmExecutor {
 
     public double getMaxFlow(){
         maxFlow = 0.0;
-        if(isAlgprithmEnd){
+        if(isAlgorithmEnd){
             for(Node dest : network.getReverseNetworkEdges(network.getDestination()).keySet()){
                 maxFlow += network.getReverseNetworkEdges(network.getDestination()).get(dest).getFlow();
             }
@@ -209,7 +209,7 @@ public class AlgorithmExecutor {
             if (relabel()) {
                 return true;
             }
-            isAlgprithmEnd = true;
+            isAlgorithmEnd = true;
         }
         return false;
     }
@@ -217,8 +217,8 @@ public class AlgorithmExecutor {
     public boolean previousStep(){
         if(isNetworkCorrect) {
             if (networkStates.size() != 0) {
-                if (isAlgprithmEnd) {
-                    isAlgprithmEnd = false;
+                if (isAlgorithmEnd) {
+                    isAlgorithmEnd = false;
                 }
                 network = null;
                 network = networkStates.get(networkStates.size() - 1);
@@ -227,5 +227,13 @@ public class AlgorithmExecutor {
             }
         }
         return false;
+    }
+
+    public double runAlgorithm(ResidualNetwork<Double> network){
+        if(setNetwork(network)){
+            while (nextStep()){}
+            return getMaxFlow();
+        }
+        return -1.0;
     }
 }
