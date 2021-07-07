@@ -2,9 +2,7 @@ package leti.practice.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import leti.practice.Controller;
 import leti.practice.commands.*;
@@ -12,7 +10,6 @@ import leti.practice.commands.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,11 +17,13 @@ public class MainWindowController {
     private static final Logger logger = Logger.getLogger(MainWindowController.class.getName());
     private MainWindow mainWindow;
     private HashMap<CommandType, Command> commands;
-    private ViewType viewType = ViewType.ORIGINAL_NETWORK;
+    private ViewType viewType = ViewType.RESIDUAL_NETWORK;
     private boolean intermediateMessagesEnabled = true;
 
     @FXML
     private TextArea console;
+    @FXML
+    private TextArea parametersTextArea;
     @FXML
     private Canvas canvas;
 
@@ -39,6 +38,10 @@ public class MainWindowController {
 
     public void printMessageToConsole(String text) {
         console.appendText(text + "\n");
+    }
+
+    public void setParametersText(String text) {
+        console.setText(text);
     }
 
     public void initializeCommands(Controller controller) {
@@ -185,6 +188,7 @@ public class MainWindowController {
 
         if (answer.isPresent()) {
             String input = answer.get();
+
         }
     }
 

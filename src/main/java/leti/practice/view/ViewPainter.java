@@ -5,14 +5,20 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import leti.practice.structures.graph.Node;
 import leti.practice.structures.graph.ResidualNetwork;
 
-public abstract class ViewPainter {
-    private Canvas canvas;
-    private final double nodeSize = 25;
+import java.util.HashMap;
 
-    public abstract void paint(ResidualNetwork<? extends Number> network);
+public abstract class ViewPainter {
+    protected Canvas canvas = null;
+    protected HashMap<Node, NodeViewParameters> nodeViewParameters;
+    protected boolean needRecalculateNodesParameters = true;
+    private final double nodeSize = 35;
+
+    public abstract void paint(ResidualNetwork<Double> network);
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
@@ -20,10 +26,28 @@ public abstract class ViewPainter {
         gc.setLineWidth(2);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
+        gc.setFont(new Font("Arial", 10));
     }
 
-    public Canvas getCanvas() {
-        return canvas;
+    public boolean isCanvasSet() {
+        return canvas != null;
+    }
+
+    public void expandCanvas(double x, double y, double size) {
+        double additionalMargin = 100;
+
+        if (canvas.getWidth() - (x + size) < 0) {
+            canvas.setWidth(x + size + additionalMargin);
+        }
+
+        if (canvas.getHeight() - (y + size) < 0) {
+            canvas.setHeight(y + size + additionalMargin);
+        }
+    }
+
+    public void clearCanvas() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     public void paintNode(double x, double y, String name) {
@@ -43,40 +67,48 @@ public abstract class ViewPainter {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        double h = nodeSize / 4;
-        double D_X = Math.abs(dx - sx);
-        double D_Y = Math.abs(dy - sy);
-        double D = Math.sqrt(D_X * D_X + D_Y * D_Y);
-        double z1 = (dy > sy)? -1 : 1;
-        double z2 = (sx > dx)? -1 : 1;
-        double d_x = z1 * D_Y * h / D;
-        double d_y = z2 * D_X * h / D;
+        double indent = nodeSize / 4;
+        double distanceX = Math.abs(dx - sx);
+        double distanceY = Math.abs(dy - sy);
+        double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        double sign_1 = (dy > sy)? -1 : 1;
+        double sign_2 = (sx > dx)? -1 : 1;
+        double deltaX = sign_1 * distanceY * indent / distance;
+        double deltaY = sign_2 * distanceX * indent / distance;
 
-        double new_sx = sx + d_x;
-        double new_dx = dx + d_x;
-        double new_sy = sy + d_y;
-        double new_dy = dy + d_y;
+        double new_sx = sx + deltaX;
+        double new_dx = dx + deltaX;
+        double new_sy = sy + deltaY;
+        double new_dy = dy + deltaY;
+        double centerX = (Math.max(new_dx, new_sx) + Math.min(new_dx, new_sx)) / 2;
+        double centerY = (Math.max(new_dy, new_sy) + Math.min(new_dy, new_sy)) / 2;
 
-        double center_x = (Math.max(new_dx, new_sx) + Math.min(new_dx, new_sx)) / 2;
-        double center_y = (Math.max(new_dy, new_sy) + Math.min(new_dy, new_sy)) / 2;
-
-        double arcCurvature = 4;
+        double arcCurvature = 6;
+        double arrowRatio = 0.5;
 
         if (lineType == LineType.STRAIGHT) {
             gc.strokeLine(new_sx, new_sy, new_dx, new_dy);
-            gc.strokeLine(center_x, center_y, center_x + d_x - d_y, center_y + d_y + d_x);
-            gc.strokeLine(center_x, center_y, center_x - d_x - d_y, center_y - d_y + d_x);
-            gc.setFill(Color.BLUE);
-            gc.fillText(info, center_x + d_x, center_y + d_y);
-            gc.setFill(Color.BLACK);
+            gc.strokeLine(centerX, centerY,
+                    centerX + arrowRatio * (deltaX - deltaY), centerY + arrowRatio * (deltaY + deltaX));
+            gc.strokeLine(centerX, centerY,
+                    centerX + arrowRatio * (-deltaX - deltaY), centerY + arrowRatio * (-deltaY + deltaX));
+            paintText(centerX + deltaX, centerY + deltaY, info, Color.RED);
         } else if (lineType == LineType.ARC) {
             gc.setLineDashes(5);
             gc.beginPath();
             gc.moveTo(new_sx, new_sy);
-            gc.quadraticCurveTo(center_x + d_x * arcCurvature, center_y + d_y * arcCurvature, new_dx, new_dy);
+            gc.quadraticCurveTo(centerX + deltaX * arcCurvature, centerY + deltaY * arcCurvature, new_dx, new_dy);
             gc.stroke();
             gc.setLineDashes(0);
-            paintText(center_x + d_x * (arcCurvature - 1), center_y + d_y * (arcCurvature - 1), info, Color.BLUE);
+
+            double arcCenterX = centerX + 3 * deltaX;
+            double arcCenterY = centerY + 3 * deltaY;
+
+            gc.strokeLine(arcCenterX, arcCenterY,
+                    arcCenterX + arrowRatio * (deltaX - deltaY), arcCenterY + arrowRatio * (deltaY + deltaX));
+            gc.strokeLine(arcCenterX, arcCenterY, arcCenterX + arrowRatio * (-deltaX - deltaY),
+                    arcCenterY + arrowRatio * (-deltaY + deltaX));
+            paintText(centerX + deltaX * (arcCurvature - 1), centerY + deltaY * (arcCurvature - 1), info, Color.RED);
         }
     }
 
@@ -86,17 +118,5 @@ public abstract class ViewPainter {
         gc.setFill(paint);
         gc.fillText(text, x, y);
         gc.setFill(originalPaint);
-    }
-
-    public void expandCanvas(double x, double y, double size) {
-        double additionalMargin = 20;
-
-        if (canvas.getWidth() - (x + size) < 0) {
-            canvas.setWidth(x + size + additionalMargin);
-        }
-
-        if (canvas.getHeight() - (y + size) < 0) {
-            canvas.setHeight(y + size + additionalMargin);
-        }
     }
 }
