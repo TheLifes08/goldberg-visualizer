@@ -87,7 +87,7 @@ public class AlgorithmExecutor {
                 //add surplus to the node
                 network.getSurpluses().put(to, network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                 //add flow to the reverse edge
-                network.getReverseNetworkEdges(to).get(network.getSource()).setFlow(network.getReverseNetworkEdges(to).get(network.getSource()).getCapacity());
+                network.getReverseNetworkEdges(to).get(network.getSource()).setFlow(-1*network.getNetworkEdges(network.getSource()).get(to).getCapacity());
             }
             amountOfNodes.remove(network.getDestination());
             amountOfNodes.remove(network.getSource());
