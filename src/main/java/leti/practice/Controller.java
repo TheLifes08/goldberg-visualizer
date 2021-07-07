@@ -55,7 +55,6 @@ public class Controller {
         //addEdge("H", "E", 4);
         //addEdge("D", "C", 4);
         //addEdge("Y", "U", 4);
-
         network.setSource(new Node("a"));
         network.setDestination(new Node("f"));
         network.printNetwork();

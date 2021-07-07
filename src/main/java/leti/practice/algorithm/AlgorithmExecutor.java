@@ -216,7 +216,7 @@ public class AlgorithmExecutor {
         }
         return false;
     }
-   /*comiiiit*/
+
     public boolean previousStep(){
         if(isNetworkCorrect) {
             if (networkStates.size() != 0) {

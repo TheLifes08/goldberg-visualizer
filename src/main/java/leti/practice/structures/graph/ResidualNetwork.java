@@ -43,19 +43,11 @@ public class ResidualNetwork<T extends Number> {
         }
     }
 
-    public ResidualNetwork(HashMap<Node, HashMap<Node, EdgeProperties<T>>> graph){
-        this.network = graph;
+    public ResidualNetwork(){
+        this.network = new HashMap<>();
         reverseNetwork = new HashMap<>();
         surpluses = new HashMap<>();
         heights = new HashMap<>();
-        for (Node from : network.keySet()){
-            for(Node to : network.get(from).keySet()){
-                if(!reverseNetwork.containsKey(to)){
-                    reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>()); // create reverse edges;
-                }
-                reverseNetwork.get(to).put(from, network.get(from).get(to).copy());
-            }
-        }
     }
     public Set<Node> getNetworkNodes(){
         return network.keySet();
@@ -79,6 +71,7 @@ public class ResidualNetwork<T extends Number> {
     public void addEdge(Node from, Node to, EdgeProperties<T> edgeProperties){
         /*add Edge*/
         if(from!=null && to!=null && edgeProperties!=null) {
+            Byte zero = 0;
             if (to.equals(source)) {
                 source = from;
             }
@@ -98,11 +91,11 @@ public class ResidualNetwork<T extends Number> {
             /*add reverse Edge*/
             if (reverseNetwork.containsKey(to)) {
                 if (!reverseNetwork.get(to).containsKey(from)) {
-                    reverseNetwork.get(to).put(from, edgeProperties.copy());
+                    reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/ new EdgeProperties<T>((T)zero, (T)zero));
                 }
             } else {
                 reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>());
-                reverseNetwork.get(to).put(from, edgeProperties.copy());
+                reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/new EdgeProperties<T>((T)zero, (T)zero));
             }
         }
     }
