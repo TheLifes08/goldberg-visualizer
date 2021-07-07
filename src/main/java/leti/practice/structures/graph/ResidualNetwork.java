@@ -91,11 +91,11 @@ public class ResidualNetwork<T extends Number> {
             /*add reverse Edge*/
             if (reverseNetwork.containsKey(to)) {
                 if (!reverseNetwork.get(to).containsKey(from)) {
-                    reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/ new EdgeProperties<T>((T)zero, (T)zero));
+                    reverseNetwork.get(to).put(from, edgeProperties.copy());
                 }
             } else {
                 reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>());
-                reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/new EdgeProperties<T>((T)zero, (T)zero));
+                reverseNetwork.get(to).put(from, edgeProperties.copy());
             }
         }
     }
