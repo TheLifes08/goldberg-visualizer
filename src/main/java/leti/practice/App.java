@@ -1,6 +1,7 @@
 package leti.practice;
 
 import javafx.application.Application;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import leti.practice.gui.MainWindow;
 import leti.practice.logging.MessageHandler;
