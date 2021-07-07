@@ -53,7 +53,7 @@ public class ResidualNetwork<T extends Number> {
                 if(!reverseNetwork.containsKey(to)){
                     reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>()); // create reverse edges;
                 }
-                reverseNetwork.get(to).put(from, network.get(from).get(to));
+                reverseNetwork.get(to).put(from, network.get(from).get(to).copy());
             }
         }
     }
@@ -98,11 +98,11 @@ public class ResidualNetwork<T extends Number> {
             /*add reverse Edge*/
             if (reverseNetwork.containsKey(to)) {
                 if (!reverseNetwork.get(to).containsKey(from)) {
-                    reverseNetwork.get(to).put(from, edgeProperties);
+                    reverseNetwork.get(to).put(from, edgeProperties.copy());
                 }
             } else {
                 reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>());
-                reverseNetwork.get(to).put(from, edgeProperties);
+                reverseNetwork.get(to).put(from, edgeProperties.copy());
             }
         }
     }
@@ -147,13 +147,13 @@ public class ResidualNetwork<T extends Number> {
     public void printNetwork(){
         for (Node from : network.keySet()) {
             for (Node to : network.get(from).keySet()) {
-                System.out.println(from.getName()+" "+to.getName()+" "+network.get(from).get(to).getCapacity());
+                System.out.println(from.getName()+" "+to.getName()+" "+network.get(from).get(to).getCapacity()+" "+network.get(from).get(to).getFlow());
             }
         }
         System.out.println("Reverse Edges:");
         for (Node from : reverseNetwork.keySet()) {
             for (Node to : reverseNetwork.get(from).keySet()) {
-                System.out.println(from.getName()+" "+to.getName()+" "+reverseNetwork.get(from).get(to).getCapacity());
+                System.out.println(from.getName()+" "+to.getName()+" "+reverseNetwork.get(from).get(to).getCapacity()+" "+reverseNetwork.get(from).get(to).getFlow());
             }
         }
         System.out.println();
