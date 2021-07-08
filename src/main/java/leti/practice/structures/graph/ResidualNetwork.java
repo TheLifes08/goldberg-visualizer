@@ -85,11 +85,11 @@ public class ResidualNetwork<T extends Number> {
             /*add reverse Edge*/
             if (reverseNetwork.containsKey(to)) {
                 if (!reverseNetwork.get(to).containsKey(from)) {
-                    reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/ new EdgeProperties<>((T)zero, (T)zero));
+                    reverseNetwork.get(to).put(from, new EdgeProperties<>((T)zero, (T)zero));
                 }
             } else {
                 reverseNetwork.put(to, new HashMap<Node, EdgeProperties<T>>());
-                reverseNetwork.get(to).put(from, /*edgeProperties.copy()*/new EdgeProperties<>((T)zero, (T)zero));
+                reverseNetwork.get(to).put(from, new EdgeProperties<>((T)zero, (T)zero));
             }
         }
     }
@@ -111,11 +111,9 @@ public class ResidualNetwork<T extends Number> {
         }
     }
     public void setSource(Node source){
-        /*think about more functional or check correction*/
         this.source = source;
     }
     public void setDestination(Node destination){
-        /*think about more functional or check correction*/
         this.destination = destination;
     }
 
