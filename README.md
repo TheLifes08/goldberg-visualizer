@@ -24,7 +24,7 @@
 
 **Диаграмма классов:**
 
-![](docs/UML-Classes Iteration 2.png)
+![](docs/UML-Classes-Iteration-2.png)
 
 **Диаграмма состояний:**
 
