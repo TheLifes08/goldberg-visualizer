@@ -12,27 +12,39 @@ public class AlgorithmExecutor {
     private static final Logger logger = Logger.getLogger(AlgorithmExecutor.class.getName());
     private ResidualNetwork<Double> network;
     private ArrayList<ResidualNetwork<Double>> networkStates;
+    private HashSet<Node> amountOfNodes;
     private double maxFlow;
     private boolean isNetworkCorrect;
     private boolean isAlgorithmEnd;
-    private HashSet<Node> amountOfNodes;
+
     public AlgorithmExecutor(){
         network = null;
         networkStates = null;
+        amountOfNodes = null;
         maxFlow = 0.0;
         isNetworkCorrect = false;
         isAlgorithmEnd = false;
     }
+
     public boolean setNetwork(ResidualNetwork<Double> network){
+        this.network = null;
+        networkStates = null;
+        amountOfNodes = null;
+        maxFlow = 0.0;
+        isNetworkCorrect = false;
+        isAlgorithmEnd = false;
+
+
         if(network==null) {
             logger.log(Level.INFO, "Error network is empty\n");
             throw new NullPointerException();
         }
+
         if(network.getSource()== null && network.getDestination()==null){
             throw new NullPointerException();
         }
-        this.network = null;
-        this.network = network; //могу копировать, могу не копировать, надо обсудить
+
+        this.network = network;
         networkStates = new ArrayList<>();
         isNetworkCorrect = checkNetwork();
         isNetworkCorrect = initializeNetwork();
@@ -46,16 +58,13 @@ public class AlgorithmExecutor {
     public double getMaxFlow(){
         if(isAlgorithmEnd){
             maxFlow = 0.0;
-
             for(Node dest : network.getReverseNetworkEdges(network.getDestination()).keySet()){
                 maxFlow += network.getReverseNetworkEdges(network.getDestination()).get(dest).getFlow();
             }
-
             if (Double.compare(maxFlow, 0.0) != 0) {
                 maxFlow *= -1;
             }
         }
-
         return maxFlow;
     }
 
@@ -86,9 +95,11 @@ public class AlgorithmExecutor {
             }
             network.getHeights().put(network.getSource(), amountOfNodes.size());
             networkStates.add(network.copy());
+            network.printNetwork();
             /*First algorithm step*/
             for(Node to : network.getNetworkEdges(network.getSource()).keySet()){
                 //add flow to edge
+
                 network.getNetworkEdges(network.getSource()).get(to).setFlow(network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                 //add surplus to the node
                 network.getSurpluses().put(to, network.getNetworkEdges(network.getSource()).get(to).getCapacity());

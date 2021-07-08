@@ -34,8 +34,6 @@ public class Controller {
         viewPainter = residualNetworkViewPainter;
 
         // NETWORK TEST INPUT
-        network.setSource(new Node("a"));
-        network.setDestination(new Node("f"));
         network.addEdge(new Node("a"), new Node("b"), new EdgeProperties<>(5.0,0.0));
         network.addEdge(new Node("a"), new Node("c"), new EdgeProperties<>(7.0,0.0));
         network.addEdge(new Node("b"), new Node("a"), new EdgeProperties<>(5.0,0.0));
@@ -45,6 +43,8 @@ public class Controller {
         network.addEdge(new Node("d"), new Node("e"), new EdgeProperties<>(9.0,0.0));
         network.addEdge(new Node("d"), new Node("f"), new EdgeProperties<>(6.0,0.0));
         network.addEdge(new Node("e"), new Node("c"), new EdgeProperties<>(6.0,0.0));
+        network.setSource(new Node("a"));
+        network.setDestination(new Node("f"));
 
         network.printNetwork();
         algorithmExecutor.setNetwork(network);
