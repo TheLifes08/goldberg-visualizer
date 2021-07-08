@@ -151,7 +151,7 @@ public class AlgorithmExecutor {
                                     network.getNetworkEdges(node).get(to).setFlow(network.getNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
                                     logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge "+node.getName()+" "+to.getName());
                                     network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Flow of reverse edge "+to.getName()+" "+ node.getName()+" is "+network.getNetworkEdges(to).get(node).getFlow());
+                                    logger.log(Level.FINEST, "Flow of reverse edge "+to.getName()+" "+ node.getName()+" is "+network.getReverseNetworkEdges(to).get(node).getFlow());
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     logger.log(Level.FINEST, "Surplus of node "+node.getName()+" is "+network.getSurpluses().get(node));
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
