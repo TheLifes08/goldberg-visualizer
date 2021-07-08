@@ -1,21 +1,22 @@
 package leti.practice.commands;
 
+import javafx.scene.canvas.Canvas;
 import leti.practice.Controller;
-import leti.practice.gui.ViewType;
 
-public class SetViewCommand implements Command {
+public class PaintViewCommand implements Command {
     private final Controller controller;
-    private final ViewType viewType;
+    private final Canvas canvas;
 
-    public SetViewCommand(Controller controller, ViewType viewType) {
+    public PaintViewCommand(Controller controller, Canvas canvas) {
         this.controller = controller;
-        this.viewType = viewType;
+        this.canvas = canvas;
     }
 
     @Override
     public boolean execute() {
         if (controller != null) {
-            return controller.setView(viewType);
+            controller.paintView(canvas);
+            return true;
         } else {
             return false;
         }

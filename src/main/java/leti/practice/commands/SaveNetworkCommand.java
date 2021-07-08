@@ -2,20 +2,26 @@ package leti.practice.commands;
 
 import leti.practice.Controller;
 
+import java.io.File;
+
 public class SaveNetworkCommand implements Command {
     private final Controller controller;
-    private String path;
+    private File file;
 
-    SaveNetworkCommand(Controller controller) {
+    public SaveNetworkCommand(Controller controller) {
         this.controller = controller;
     }
 
-    void setPath(String path) {
-        this.path = path;
+    public void setFile(File file) {
+        this.file = file;
     }
 
     @Override
-    public void execute() {
-        controller.saveNetwork(path);;
+    public boolean execute() {
+        if (controller != null) {
+            return controller.saveNetwork(file);
+        } else {
+            return false;
+        }
     }
 }

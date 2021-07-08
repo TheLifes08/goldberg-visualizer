@@ -5,12 +5,17 @@ import leti.practice.Controller;
 public class ClearNetworkCommand implements Command {
     private final Controller controller;
 
-    ClearNetworkCommand(Controller controller) {
+    public ClearNetworkCommand(Controller controller) {
         this.controller = controller;
     }
 
     @Override
-    public void execute() {
-        controller.clearNetwork();
+    public boolean execute() {
+        if (controller != null) {
+            controller.clearNetwork();
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -5,8 +5,8 @@ import leti.practice.structures.graph.ResidualNetwork;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ResidualNetworkViewPainter extends NetworkViewPainter {
-    public ResidualNetworkViewPainter() {
+public class OriginalNetworkViewPainter extends NetworkViewPainter {
+    public OriginalNetworkViewPainter() {
         nodeViewParameters = new HashMap<>();
         layersNodeCount = new ArrayList<Integer>();
     }
@@ -19,10 +19,9 @@ public class ResidualNetworkViewPainter extends NetworkViewPainter {
             layersNodeCount.ensureCapacity(network.getNetworkNodes().size());
             calculateNodesParameters(network);
             layersNodeCount.clear();
-            needRecalculateNodesParameters = false;
         }
 
-        paintEdges(network, true);
+        paintEdges(network, false);
         paintNodes(network);
     }
 }
