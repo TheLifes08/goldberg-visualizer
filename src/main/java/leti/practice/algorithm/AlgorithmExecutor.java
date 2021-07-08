@@ -101,6 +101,23 @@ public class AlgorithmExecutor {
             for(Node node : amountOfNodes){
                 //Если переполнение
                 if(network.getSurpluses().get(node)>0){
+                    if(network.getReverseNetworkNodes().contains(node)){
+                        for (Node to : network.getReverseNetworkEdges(node).keySet()){
+                            //если можно пропустить поток через обратное ребро
+                            if(network.getReverseNetworkEdges(node).get(to).getFlow()< 0.0){
+                                if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
+                                    double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getCapacity() - network.getReverseNetworkEdges(node).get(to).getFlow());
+                                    logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
+                                    network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
+                                    network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
+                                    network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
+                                    network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
+                                    logger.log(Level.INFO, "Make push with node " + node.getName());
+                                    return true;
+                                }
+                            }
+                        }
+                    }
                     if(network.getNetworkNodes().contains(node)){
                         for(Node to :network.getNetworkEdges(node).keySet()){
                             //если можно пропустить поток через ребро
@@ -114,22 +131,6 @@ public class AlgorithmExecutor {
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
                                     logger.log(Level.INFO, "Make push with node "+ node.getName());
-                                    return true;
-                                }
-                            }
-                        }
-                    }if(network.getReverseNetworkNodes().contains(node)){
-                        for (Node to : network.getReverseNetworkEdges(node).keySet()){
-                            //если можно пропустить поток через обратное ребро
-                            if(network.getReverseNetworkEdges(node).get(to).getFlow()< 0.0){
-                                if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
-                                    double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getCapacity() - network.getReverseNetworkEdges(node).get(to).getFlow());
-                                    logger.log(Level.INFO, "availableAmountOfFlow " + availableAmountOfFlow);
-                                    network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
-                                    network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
-                                    network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
-                                    network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
-                                    logger.log(Level.INFO, "Make push with node " + node.getName());
                                     return true;
                                 }
                             }
@@ -150,21 +151,24 @@ public class AlgorithmExecutor {
                     if(network.getNetworkNodes().contains(node)){
                         ArrayList<Integer> heights = new ArrayList<>();
                         for(Node to :network.getNetworkEdges(node).keySet()){
-                            //if(!to.equals(network.getDestination())) {
-                                heights.add(network.getHeights().get(to));
+                            if(!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
                                 if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                     flag = true;
                                     break;
                                 }
-                           // }
+                                heights.add(network.getHeights().get(to));
+                            }
                         }
                         if(network.getReverseNetworkNodes().contains(node) && !flag){
                             for (Node to : network.getReverseNetworkEdges(node).keySet()){
-                                heights.add(network.getHeights().get(to));
-                                if(network.getHeights().get(node) > network.getHeights().get(to)){
-                                    flag = true;
-                                    break;
+                                if(!network.getReverseNetworkEdges(node).get(to).getFlow().equals(network.getReverseNetworkEdges(node).get(to).getCapacity())) {
+                                    if (network.getHeights().get(node) > network.getHeights().get(to)) {
+                                        flag = true;
+                                        break;
+                                    }
+                                    heights.add(network.getHeights().get(to));
                                 }
+
                             }
                         }
                         if(!flag){
@@ -172,31 +176,29 @@ public class AlgorithmExecutor {
                             logger.log(Level.INFO, "Make relabel with node " + node.getName());
                             return true;
                         }
-                    }if(network.getReverseNetworkNodes().contains(node)){
+                    }/*if(network.getReverseNetworkNodes().contains(node)){
                         ArrayList<Integer> heights = new ArrayList<>();
                         for(Node to :network.getReverseNetworkEdges(node).keySet()){
-                            heights.add(network.getHeights().get(to));
                             if(network.getHeights().get(node) > network.getHeights().get(to)){
                                 flag = true;
                                 break;
                             }
+                            heights.add(network.getHeights().get(to));
                         }
                         if(network.getNetworkNodes().contains(node) && !flag){
                             for (Node to : network.getNetworkEdges(node).keySet()){
-                                //if(!to.equals(network.getDestination())) {
                                     heights.add(network.getHeights().get(to));
                                     if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                         flag = true;
                                         break;
                                     }
-                                //}
                             }
                         }
                         if(!flag){
                             network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
                             return true;
                         }
-                    }
+                    }*/
                 }
             }
         }
