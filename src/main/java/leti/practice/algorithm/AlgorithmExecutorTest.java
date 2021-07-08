@@ -186,7 +186,7 @@ public class AlgorithmExecutorTest {
         Assertions.assertEquals(14,test_alg.runAlgorithm(test_network_4));
         Assertions.assertEquals(7,test_alg.runAlgorithm(test_network_5));
         Assertions.assertEquals(0,test_alg.runAlgorithm(test_network_6));
-        //Assertions.assertEquals(7,test_alg.runAlgorithm(test_network_7));
+        Assertions.assertEquals(7,test_alg.runAlgorithm(test_network_7));
         //Assertions.assertEquals(7,test_alg.runAlgorithm(test_network_8));
         Assertions.assertEquals(8,test_alg.runAlgorithm(test_network_9));
         Assertions.assertEquals(10,test_alg.runAlgorithm(test_network_10));
