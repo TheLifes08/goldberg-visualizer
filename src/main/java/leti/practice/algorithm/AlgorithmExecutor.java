@@ -77,6 +77,13 @@ public class AlgorithmExecutor {
     private boolean checkNetwork(){
         logger.log(Level.FINEST, "Checking correction of the network\n");
 
+        amountOfNodes = new HashSet<>(network.getNetworkNodes());
+        amountOfNodes.addAll(network.getReverseNetworkNodes());
+
+        if (!amountOfNodes.contains(network.getSource()) || !amountOfNodes.contains(network.getDestination())) {
+            return false;
+        }
+
         for(Node from : network.getNetworkNodes()){
             for (Node to : network.getNetworkEdges(from).keySet()){
                 if(network.getNetworkEdges(from).get(to).getCapacity() < 0.0
@@ -95,8 +102,6 @@ public class AlgorithmExecutor {
     private boolean initializeNetwork(){
         if(isNetworkCorrect){
             logger.log(Level.FINEST, "|------------------------------|\nStart Initialization of network");
-            amountOfNodes = new HashSet<>(network.getNetworkNodes());
-            amountOfNodes.addAll(network.getReverseNetworkNodes());
 
             /*Initialization of heights and surplus function*/
             for (Node node:amountOfNodes){
