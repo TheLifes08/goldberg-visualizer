@@ -19,6 +19,7 @@ public abstract class ViewPainter {
     private final double nodeSize = 35;
 
     public abstract void paint(ResidualNetwork<Double> network);
+    protected abstract void getNodesParameters(ResidualNetwork<Double> network);
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
@@ -50,19 +51,34 @@ public abstract class ViewPainter {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
+    public void setNeedRecalculateNodesParameters(boolean value) {
+        needRecalculateNodesParameters = value;
+    }
+
     public void paintNode(double x, double y, String name) {
+        paintNode(x, y, name, Color.BLACK);
+    }
+
+    public void paintNode(double x, double y, String name, Paint color) {
         expandCanvas(x, y, nodeSize);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        Paint originalPaint = gc.getStroke();
 
+        gc.setStroke(color);
         gc.strokeOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
         gc.setFill(Color.WHITE);
         gc.fillOval(x - nodeSize / 2 + 1, y - nodeSize / 2 + 1, nodeSize - 2, nodeSize - 2);
         gc.setFill(Color.BLACK);
         gc.fillText(name, x, y);
+        gc.setStroke(originalPaint);
     }
 
     public void paintEdge(double sx, double sy, double dx, double dy, String info, LineType lineType) {
+        paintEdge(sx, sy, dx, dy, info, lineType, Color.BLACK);
+    }
+
+    public void paintEdge(double sx, double sy, double dx, double dy, String info, LineType lineType, Paint color) {
         expandCanvas(Math.max(sx, dx), Math.max(sy, dy), 0);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -96,6 +112,9 @@ public abstract class ViewPainter {
         double arcCurvature = 6;
         double arrowRatio = 0.5;
 
+        Paint originalPaint = gc.getStroke();
+        gc.setStroke(color);
+
         if (lineType == LineType.STRAIGHT) {
             gc.strokeLine(new_sx, new_sy, new_dx, new_dy);
             gc.strokeLine(centerX, centerY,
@@ -120,6 +139,8 @@ public abstract class ViewPainter {
                     arcCenterY + arrowRatio * (-deltaY + deltaX));
             paintText(centerX - deltaX * (arcCurvature - 1), centerY - deltaY * (arcCurvature - 1), info, Color.RED);
         }
+
+        gc.setStroke(originalPaint);
     }
 
     public void paintText(double x, double y, String text, Paint paint) {

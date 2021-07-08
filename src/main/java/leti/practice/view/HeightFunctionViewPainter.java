@@ -7,4 +7,9 @@ public class HeightFunctionViewPainter extends ViewPainter {
     public void paint(ResidualNetwork<Double> network) {
         clearCanvas();
     }
+
+    @Override
+    protected void getNodesParameters(ResidualNetwork<Double> network) {
+        nodeViewParameters.clear();
+    }
 }

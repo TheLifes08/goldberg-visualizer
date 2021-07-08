@@ -7,10 +7,7 @@ import leti.practice.gui.ViewType;
 import leti.practice.structures.graph.EdgeProperties;
 import leti.practice.structures.graph.Node;
 import leti.practice.structures.graph.ResidualNetwork;
-import leti.practice.view.HeightFunctionViewPainter;
-import leti.practice.view.NetworkViewPainter;
-import leti.practice.view.ResidualNetworkViewPainter;
-import leti.practice.view.ViewPainter;
+import leti.practice.view.*;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -18,7 +15,7 @@ import java.util.logging.Logger;
 
 public class Controller {
     private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
-    private AlgorithmExecutor algorithmExecutor = null;
+    private AlgorithmExecutor algorithmExecutor;
     private ResidualNetwork<Double> network;
     private NetworkViewPainter networkViewPainter;
     private ResidualNetworkViewPainter residualNetworkViewPainter;
@@ -26,11 +23,11 @@ public class Controller {
     private ViewPainter viewPainter;
 
     public Controller() {
+        network = new ResidualNetwork<Double>();
         algorithmExecutor = new AlgorithmExecutor();
-        networkViewPainter = new NetworkViewPainter();
+        networkViewPainter = new OriginalNetworkViewPainter();
         residualNetworkViewPainter = new ResidualNetworkViewPainter();
         heightFunctionViewPainter = new HeightFunctionViewPainter();
-        network = new ResidualNetwork<Double>();
         viewPainter = residualNetworkViewPainter;
 
         // NETWORK TEST INPUT
@@ -59,8 +56,6 @@ public class Controller {
     }
 
     public void setView(ViewType viewType) {
-        logger.log(Level.INFO, "Set View Command executed.");
-
         if (viewType == ViewType.ORIGINAL_NETWORK) {
             viewPainter = networkViewPainter;
         } else if (viewType == ViewType.RESIDUAL_NETWORK) {
@@ -71,27 +66,30 @@ public class Controller {
     }
 
     public boolean stepForward() {
-        logger.log(Level.INFO, "Step Forward Command executed.");
-        logger.log(Level.FINEST, "Intermediate message!");
-        network.printNetwork();
-        return algorithmExecutor.nextStep();
-        //return false;
+        if (algorithmExecutor != null) {
+            logger.log(Level.INFO, "Step Forward Command executed.");
+            return algorithmExecutor.nextStep();
+        }
+        return false;
     }
 
     public void stepBackward() {
-        logger.log(Level.INFO, "Step Backward Command executed.");
-        logger.log(Level.FINEST, "Intermediate message!");
-        //algorithmExecutor.previousSrep();
+        if (algorithmExecutor != null) {
+            logger.log(Level.INFO, "Step Backward Command executed.");
+            algorithmExecutor.previousStep();
+        }
     }
 
     public void addEdge(String source, String destination, double capacity) {
         logger.log(Level.INFO, "Add Edge Command executed.");
         network.addEdge(new Node(source), new Node(destination), new EdgeProperties<Double>(capacity, 0.0));
+        viewPainter.setNeedRecalculateNodesParameters(true);
     }
 
     public void removeEdge(String source, String destination) {
         logger.log(Level.INFO, "Remove Edge Command executed.");
         network.deleteEdge(new Node(source), new Node(destination));
+        viewPainter.setNeedRecalculateNodesParameters(true);
     }
 
     public void clearNetwork() {
@@ -99,10 +97,12 @@ public class Controller {
         if (viewPainter.isCanvasSet()) {
             viewPainter.clearCanvas();
         }
+        network = new ResidualNetwork<Double>();
+        algorithmExecutor = null;
+        viewPainter.setNeedRecalculateNodesParameters(true);
     }
 
     public void paintView(Canvas canvas) {
-        logger.log(Level.INFO, "Paint View Command executed.");
         viewPainter.setCanvas(canvas);
         viewPainter.paint(network);
     }
