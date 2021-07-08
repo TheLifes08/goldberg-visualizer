@@ -57,16 +57,15 @@ public class MainWindowController {
         commands.put(CommandType.SET_VIEW_HEIGHT_FUNCTION, new SetViewCommand(controller, ViewType.HEIGHT_FUNCTION));
         commands.put(CommandType.STEP_FORWARD, new StepForwardCommand(controller));
         commands.put(CommandType.STEP_BACKWARD, new StepBackwardCommand(controller));
-
         updateNetworkViewAndParameters();
     }
 
     void updateNetworkViewAndParameters() {
+        GetNetworkParametersCommand getParametersCommand = (GetNetworkParametersCommand) commands.get(
+                CommandType.GET_NETWORK_PARAMETERS);
         commands.get(CommandType.PAINT_VIEW).execute();
-
-        GetNetworkParametersCommand command = (GetNetworkParametersCommand) commands.get(CommandType.GET_NETWORK_PARAMETERS);
-        command.execute();
-        setParametersText(command.getNetworkParameters());
+        getParametersCommand.execute();
+        setParametersText(getParametersCommand.getNetworkParameters());
     }
 
     @FXML
@@ -77,7 +76,9 @@ public class MainWindowController {
             logger.log(Level.INFO, "Chosen file: " + file.getAbsolutePath());
             LoadNetworkCommand loadCommand = (LoadNetworkCommand) commands.get(CommandType.LOAD_NETWORK);
             loadCommand.setFile(file);
-            loadCommand.execute();
+            if (!loadCommand.execute()) {
+                mainWindow.showError("Error loading the network from a file!");
+            }
             updateNetworkViewAndParameters();
         }
     }
@@ -90,7 +91,9 @@ public class MainWindowController {
             logger.log(Level.INFO, "Chosen file: " + file.getAbsolutePath());
             SaveNetworkCommand saveCommand = (SaveNetworkCommand) commands.get(CommandType.SAVE_NETWORK);
             saveCommand.setFile(file);
-            saveCommand.execute();
+            if (!saveCommand.execute()) {
+                mainWindow.showError("Error saving the network to a file!");
+            }
         }
     }
 
@@ -183,11 +186,12 @@ public class MainWindowController {
     @FXML
     private void buttonRunAlgorithmPressed() {
         StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
+        boolean stepResult;
 
         do {
-            stepForwardCommand.execute();
+            stepResult = stepForwardCommand.execute();
             updateNetworkViewAndParameters();
-        } while (stepForwardCommand.getResult());
+        } while (stepResult);
     }
 
     @FXML

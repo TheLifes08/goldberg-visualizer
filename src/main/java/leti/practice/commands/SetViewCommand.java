@@ -13,7 +13,11 @@ public class SetViewCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.setView(viewType);
+    public boolean execute() {
+        if (controller != null) {
+            return controller.setView(viewType);
+        } else {
+            return false;
+        }
     }
 }

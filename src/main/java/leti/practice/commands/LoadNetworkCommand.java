@@ -17,7 +17,11 @@ public class LoadNetworkCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.loadNetwork(file);;
+    public boolean execute() {
+        if (controller != null) {
+            return controller.loadNetwork(file);
+        } else {
+            return false;
+        }
     }
 }

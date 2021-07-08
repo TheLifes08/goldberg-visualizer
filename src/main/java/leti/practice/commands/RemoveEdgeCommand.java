@@ -19,7 +19,12 @@ public class RemoveEdgeCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.removeEdge(source, destination);
+    public boolean execute() {
+        if (controller != null) {
+            controller.removeEdge(source, destination);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

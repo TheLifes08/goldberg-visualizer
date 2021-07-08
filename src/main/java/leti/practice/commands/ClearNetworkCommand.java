@@ -10,7 +10,12 @@ public class ClearNetworkCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.clearNetwork();
+    public boolean execute() {
+        if (controller != null) {
+            controller.clearNetwork();
+            return true;
+        } else {
+            return false;
+        }
     }
 }

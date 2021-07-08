@@ -15,7 +15,12 @@ public class GetNetworkParametersCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        networkParameters = controller.getNetworkParameters();
+    public boolean execute() {
+        if (controller != null) {
+            networkParameters = controller.getNetworkParameters();
+            return networkParameters != null;
+        } else {
+            return false;
+        }
     }
 }

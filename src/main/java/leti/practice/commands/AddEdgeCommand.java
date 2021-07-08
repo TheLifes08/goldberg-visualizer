@@ -5,7 +5,7 @@ import leti.practice.Controller;
 public class AddEdgeCommand implements Command {
     private final Controller controller;
     private String source, destination;
-    private double capacity;
+    private Double capacity;
 
     public AddEdgeCommand(Controller controller) {
         this.controller = controller;
@@ -24,7 +24,12 @@ public class AddEdgeCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.addEdge(source, destination, capacity);
+    public boolean execute() {
+        if (controller != null) {
+            controller.addEdge(source, destination, capacity);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

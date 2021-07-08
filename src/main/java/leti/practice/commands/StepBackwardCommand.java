@@ -10,7 +10,11 @@ public class StepBackwardCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.stepBackward();
+    public boolean execute() {
+        if (controller != null) {
+            return controller.stepBackward();
+        } else {
+            return false;
+        }
     }
 }

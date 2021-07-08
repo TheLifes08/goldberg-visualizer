@@ -17,7 +17,11 @@ public class SaveNetworkCommand implements Command {
     }
 
     @Override
-    public void execute() {
-        controller.saveNetwork(file);;
+    public boolean execute() {
+        if (controller != null) {
+            return controller.saveNetwork(file);
+        } else {
+            return false;
+        }
     }
 }
