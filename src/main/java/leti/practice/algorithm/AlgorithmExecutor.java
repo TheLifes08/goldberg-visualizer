@@ -44,13 +44,19 @@ public class AlgorithmExecutor {
     }
 
     public double getMaxFlow(){
-        maxFlow = 0.0;
         if(isAlgorithmEnd){
+            maxFlow = 0.0;
+
             for(Node dest : network.getReverseNetworkEdges(network.getDestination()).keySet()){
                 maxFlow += network.getReverseNetworkEdges(network.getDestination()).get(dest).getFlow();
             }
+
+            if (Double.compare(maxFlow, 0.0) != 0) {
+                maxFlow *= -1;
+            }
         }
-        return maxFlow*-1;
+
+        return maxFlow;
     }
 
     private boolean checkNetwork(){
@@ -176,29 +182,7 @@ public class AlgorithmExecutor {
                             logger.log(Level.INFO, "Make relabel with node " + node.getName());
                             return true;
                         }
-                    }/*if(network.getReverseNetworkNodes().contains(node)){
-                        ArrayList<Integer> heights = new ArrayList<>();
-                        for(Node to :network.getReverseNetworkEdges(node).keySet()){
-                            if(network.getHeights().get(node) > network.getHeights().get(to)){
-                                flag = true;
-                                break;
-                            }
-                            heights.add(network.getHeights().get(to));
-                        }
-                        if(network.getNetworkNodes().contains(node) && !flag){
-                            for (Node to : network.getNetworkEdges(node).keySet()){
-                                    heights.add(network.getHeights().get(to));
-                                    if (network.getHeights().get(node) > network.getHeights().get(to)) {
-                                        flag = true;
-                                        break;
-                                    }
-                            }
-                        }
-                        if(!flag){
-                            network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
-                            return true;
-                        }
-                    }*/
+                    }
                 }
             }
         }
@@ -215,8 +199,13 @@ public class AlgorithmExecutor {
                 return true;
             }
             isAlgorithmEnd = true;
+            logger.log(Level.INFO, "END ALGORYTM");
         }
-        logger.log(Level.INFO, "END ALGORYTM");
+
+        if (!isNetworkCorrect) {
+            logger.log(Level.INFO, "NETWORK ISNT CORRECT");
+        }
+
         return false;
     }
 
@@ -236,7 +225,7 @@ public class AlgorithmExecutor {
     }
 
     public double runAlgorithm(ResidualNetwork<Double> network){
-        if(setNetwork(network)){
+        if (setNetwork(network)){
             while (nextStep()){}
             return getMaxFlow();
         }

@@ -36,7 +36,7 @@ public class ResidualNetwork<T extends Number> {
             }
         }
         for (Map.Entry<Node, Integer> entry : heights.entrySet()){
-            this.heights.put(entry.getKey().copy(), Integer.valueOf(entry.getValue().intValue()));
+            this.heights.put(entry.getKey().copy(), entry.getValue());
         }
         for (Map.Entry<Node, T> entry : surpluses.entrySet()){
             this.surpluses.put(entry.getKey().copy(), entry.getValue());

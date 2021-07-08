@@ -13,7 +13,6 @@ import leti.practice.view.ResidualNetworkViewPainter;
 import leti.practice.view.ViewPainter;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,30 +34,20 @@ public class Controller {
         viewPainter = residualNetworkViewPainter;
 
         // NETWORK TEST INPUT
-        network.addEdge(new Node("a"), new Node("b"), new EdgeProperties<>(5.0, 0.0));
-        network.addEdge(new Node("a"), new Node("c"), new EdgeProperties<>(7.0, 0.0));
-        network.addEdge(new Node("b"), new Node("a"), new EdgeProperties<>(5.0, 0.0));
-        //network.addEdge(new Node("b"), new Node("d"), new EdgeProperties<>(0.0, 0.0));
-        network.addEdge(new Node("c"), new Node("a"), new EdgeProperties<>(7.0, 0.0));
-        network.addEdge(new Node("c"), new Node("f"), new EdgeProperties<>(12.0, 0.0));
-        network.addEdge(new Node("d"), new Node("e"), new EdgeProperties<>(9.0, 0.0));
-        network.addEdge(new Node("d"), new Node("f"), new EdgeProperties<>(6.0, 0.0));
-        network.addEdge(new Node("e"), new Node("c"), new EdgeProperties<>(6.0, 0.0));
-        //addEdge("A", "B", 2);
-        //addEdge("B", "C", 13);
-        //addEdge("C", "D", 9);
-        //addEdge("E", "F", 7);
-        //addEdge("G", "H", 7);
-        //addEdge("B", "E", 7);
-        //addEdge("A", "G", 8);
-        //addEdge("F", "D", 10);
-        //addEdge("H", "E", 4);
-        //addEdge("D", "C", 4);
-        //addEdge("Y", "U", 4);
         network.setSource(new Node("a"));
         network.setDestination(new Node("f"));
+        network.addEdge(new Node("a"), new Node("b"), new EdgeProperties<>(5.0,0.0));
+        network.addEdge(new Node("a"), new Node("c"), new EdgeProperties<>(7.0,0.0));
+        network.addEdge(new Node("b"), new Node("a"), new EdgeProperties<>(5.0,0.0));
+        network.addEdge(new Node("b"), new Node("d"), new EdgeProperties<>(0.0,0.0));
+        network.addEdge(new Node("c"), new Node("a"), new EdgeProperties<>(7.0,0.0));
+        network.addEdge(new Node("c"), new Node("f"), new EdgeProperties<>(12.0,0.0));
+        network.addEdge(new Node("d"), new Node("e"), new EdgeProperties<>(9.0,0.0));
+        network.addEdge(new Node("d"), new Node("f"), new EdgeProperties<>(6.0,0.0));
+        network.addEdge(new Node("e"), new Node("c"), new EdgeProperties<>(6.0,0.0));
+
         network.printNetwork();
-        System.out.println(algorithmExecutor.runAlgorithm(network));
+        algorithmExecutor.setNetwork(network);
     }
 
     public void loadNetwork(File file) {
@@ -84,8 +73,9 @@ public class Controller {
     public boolean stepForward() {
         logger.log(Level.INFO, "Step Forward Command executed.");
         logger.log(Level.FINEST, "Intermediate message!");
-        //return algorithmExecutor.nextStep();
-        return false;
+        network.printNetwork();
+        return algorithmExecutor.nextStep();
+        //return false;
     }
 
     public void stepBackward() {
