@@ -11,5 +11,6 @@ public enum CommandType {
     ADD_EDGE,
     REMOVE_EDGE,
     CLEAR_NETWORK,
-    PAINT_VIEW
+    PAINT_VIEW,
+    GET_NETWORK_PARAMETERS
 }

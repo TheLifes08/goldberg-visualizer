@@ -1,6 +1,7 @@
 package leti.practice.view;
 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import leti.practice.structures.graph.EdgeProperties;
 import leti.practice.structures.graph.Node;
 import leti.practice.structures.graph.ResidualNetwork;
@@ -121,11 +122,18 @@ public abstract class NetworkViewPainter extends ViewPainter {
 
     protected void paintNodes(ResidualNetwork<Double> network) {
         for (NodeViewParameters parameters : nodeViewParameters.values()) {
-            if (network.getSurpluses().get(parameters.node) > 0) {
-                paintNode(parameters.x, parameters.y, parameters.node.getName(), Color.BLUE);
-            } else {
-                paintNode(parameters.x, parameters.y, parameters.node.getName());
+            Double height = network.getSurpluses().get(parameters.node);
+            Paint color = Color.BLACK;
+
+            if (network.getSource().equals(parameters.node)) {
+                color = Color.DARKBLUE;
+            } else if (network.getDestination().equals(parameters.node)) {
+                color = Color.LIGHTBLUE;
+            } else if (height != null && height > 0) {
+                color = Color.BLUE;
             }
+
+            paintNode(parameters.x, parameters.y, parameters.node.getName(), color);
         }
     }
 }

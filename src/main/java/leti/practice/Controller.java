@@ -10,6 +10,7 @@ import leti.practice.structures.graph.ResidualNetwork;
 import leti.practice.view.*;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,19 +32,17 @@ public class Controller {
         viewPainter = residualNetworkViewPainter;
 
         // NETWORK TEST INPUT
-        network.addEdge(new Node("a"), new Node("b"), new EdgeProperties<>(5.0,0.0));
-        network.addEdge(new Node("a"), new Node("c"), new EdgeProperties<>(7.0,0.0));
-        network.addEdge(new Node("b"), new Node("a"), new EdgeProperties<>(5.0,0.0));
-        network.addEdge(new Node("b"), new Node("d"), new EdgeProperties<>(0.0,0.0));
-        network.addEdge(new Node("c"), new Node("a"), new EdgeProperties<>(7.0,0.0));
-        network.addEdge(new Node("c"), new Node("f"), new EdgeProperties<>(12.0,0.0));
-        network.addEdge(new Node("d"), new Node("e"), new EdgeProperties<>(9.0,0.0));
-        network.addEdge(new Node("d"), new Node("f"), new EdgeProperties<>(6.0,0.0));
-        network.addEdge(new Node("e"), new Node("c"), new EdgeProperties<>(6.0,0.0));
-        network.setSource(new Node("a"));
-        network.setDestination(new Node("f"));
+        addEdge("S", "A", 10);
+        addEdge("S", "B", 4);
+        addEdge("S", "C", 6);
+        addEdge("A", "D", 4);
+        addEdge("C", "E", 5);
+        addEdge("B", "E", 7);
+        addEdge("E", "T", 3);
+        addEdge("D", "T", 5);
+        network.setSource(new Node("S"));
+        network.setDestination(new Node("T"));
 
-        network.printNetwork();
         algorithmExecutor.setNetwork(network);
     }
 
@@ -68,8 +67,9 @@ public class Controller {
     public boolean stepForward() {
         if (algorithmExecutor != null) {
             logger.log(Level.INFO, "Step Forward Command executed.");
+            boolean result = algorithmExecutor.nextStep();
             network = algorithmExecutor.getNetwork();
-            return algorithmExecutor.nextStep();
+            return result;
         }
         return false;
     }
@@ -77,8 +77,8 @@ public class Controller {
     public void stepBackward() {
         if (algorithmExecutor != null) {
             logger.log(Level.INFO, "Step Backward Command executed.");
-            network = algorithmExecutor.getNetwork();
             algorithmExecutor.previousStep();
+            network = algorithmExecutor.getNetwork();
         }
     }
 
@@ -107,5 +107,9 @@ public class Controller {
     public void paintView(Canvas canvas) {
         viewPainter.setCanvas(canvas);
         viewPainter.paint(network);
+    }
+
+    public String getNetworkParameters() {
+        return NetworkParametersFormatter.getNetworkParameters(network);
     }
 }

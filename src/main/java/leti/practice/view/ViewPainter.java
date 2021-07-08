@@ -16,7 +16,7 @@ public abstract class ViewPainter {
     protected Canvas canvas = null;
     protected HashMap<Node, NodeViewParameters> nodeViewParameters;
     protected boolean needRecalculateNodesParameters = true;
-    private final double nodeSize = 35;
+    private final double nodeSize = 34;
 
     public abstract void paint(ResidualNetwork<Double> network);
     protected abstract void getNodesParameters(ResidualNetwork<Double> network);
@@ -66,10 +66,10 @@ public abstract class ViewPainter {
         Paint originalPaint = gc.getStroke();
 
         gc.setStroke(color);
-        gc.strokeOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
         gc.setFill(Color.WHITE);
-        gc.fillOval(x - nodeSize / 2 + 1, y - nodeSize / 2 + 1, nodeSize - 2, nodeSize - 2);
+        gc.fillOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
         gc.setFill(Color.BLACK);
+        gc.strokeOval(x - nodeSize / 2, y - nodeSize / 2, nodeSize, nodeSize);
         gc.fillText(name, x, y);
         gc.setStroke(originalPaint);
     }

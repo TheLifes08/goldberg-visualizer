@@ -41,7 +41,7 @@ public class MainWindowController {
     }
 
     public void setParametersText(String text) {
-        console.setText(text);
+        parametersTextArea.setText(text);
     }
 
     public void initializeCommands(Controller controller) {
@@ -51,11 +51,22 @@ public class MainWindowController {
         commands.put(CommandType.LOAD_NETWORK, new LoadNetworkCommand(controller));
         commands.put(CommandType.SAVE_NETWORK, new SaveNetworkCommand(controller));
         commands.put(CommandType.PAINT_VIEW, new PaintViewCommand(controller, canvas));
+        commands.put(CommandType.GET_NETWORK_PARAMETERS, new GetNetworkParametersCommand(controller));
         commands.put(CommandType.SET_VIEW_ORIGINAL_NETWORK, new SetViewCommand(controller, ViewType.ORIGINAL_NETWORK));
         commands.put(CommandType.SET_VIEW_RESIDUAL_NETWORK, new SetViewCommand(controller, ViewType.RESIDUAL_NETWORK));
         commands.put(CommandType.SET_VIEW_HEIGHT_FUNCTION, new SetViewCommand(controller, ViewType.HEIGHT_FUNCTION));
         commands.put(CommandType.STEP_FORWARD, new StepForwardCommand(controller));
         commands.put(CommandType.STEP_BACKWARD, new StepBackwardCommand(controller));
+
+        updateNetworkViewAndParameters();
+    }
+
+    void updateNetworkViewAndParameters() {
+        commands.get(CommandType.PAINT_VIEW).execute();
+
+        GetNetworkParametersCommand command = (GetNetworkParametersCommand) commands.get(CommandType.GET_NETWORK_PARAMETERS);
+        command.execute();
+        setParametersText(command.getNetworkParameters());
     }
 
     @FXML
@@ -67,7 +78,7 @@ public class MainWindowController {
             LoadNetworkCommand loadCommand = (LoadNetworkCommand) commands.get(CommandType.LOAD_NETWORK);
             loadCommand.setFile(file);
             loadCommand.execute();
-            commands.get(CommandType.PAINT_VIEW).execute();
+            updateNetworkViewAndParameters();
         }
     }
 
@@ -160,25 +171,23 @@ public class MainWindowController {
     @FXML
     private void buttonStepBackwardPressed() {
         commands.get(CommandType.STEP_BACKWARD).execute();
-        commands.get(CommandType.PAINT_VIEW).execute();
+        updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonStepForwardPressed() {
         commands.get(CommandType.STEP_FORWARD).execute();
-        commands.get(CommandType.PAINT_VIEW).execute();
+        updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonRunAlgorithmPressed() {
-        StepForwardCommand command = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
-        Command paintViewCommand = commands.get(CommandType.PAINT_VIEW);
+        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
 
         do {
-            command.execute();
-            paintViewCommand.execute();
-
-        } while (command.getResult());
+            stepForwardCommand.execute();
+            updateNetworkViewAndParameters();
+        } while (stepForwardCommand.getResult());
     }
 
     @FXML
@@ -189,6 +198,7 @@ public class MainWindowController {
         if (answer.isPresent()) {
             String input = answer.get();
 
+            updateNetworkViewAndParameters();
         }
     }
 
@@ -199,12 +209,14 @@ public class MainWindowController {
 
         if (answer.isPresent()) {
             String input = answer.get();
+
+            updateNetworkViewAndParameters();
         }
     }
 
     @FXML
     private void buttonClearNetworkPressed() {
         commands.get(CommandType.CLEAR_NETWORK).execute();
-        commands.get(CommandType.PAINT_VIEW).execute();
+        updateNetworkViewAndParameters();
     }
 }
