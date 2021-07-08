@@ -68,6 +68,7 @@ public class Controller {
     public boolean stepForward() {
         if (algorithmExecutor != null) {
             logger.log(Level.INFO, "Step Forward Command executed.");
+            network = algorithmExecutor.getNetwork();
             return algorithmExecutor.nextStep();
         }
         return false;
@@ -76,6 +77,7 @@ public class Controller {
     public void stepBackward() {
         if (algorithmExecutor != null) {
             logger.log(Level.INFO, "Step Backward Command executed.");
+            network = algorithmExecutor.getNetwork();
             algorithmExecutor.previousStep();
         }
     }
