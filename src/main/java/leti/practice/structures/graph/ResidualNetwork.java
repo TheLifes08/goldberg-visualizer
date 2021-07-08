@@ -111,11 +111,9 @@ public class ResidualNetwork<T extends Number> {
         }
     }
     public void setSource(Node source){
-        /*think about more functional or check correction*/
         this.source = source;
     }
     public void setDestination(Node destination){
-        /*think about more functional or check correction*/
         this.destination = destination;
     }
 
