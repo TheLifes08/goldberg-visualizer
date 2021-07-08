@@ -6,7 +6,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.LogRecord;
 
 public class MessageHandler extends ConsoleHandler {
-    MainWindowController mainWindowController;
+    private MainWindowController mainWindowController;
 
     public void setMainWindowController(MainWindowController mainWindowController) {
         this.mainWindowController = mainWindowController;

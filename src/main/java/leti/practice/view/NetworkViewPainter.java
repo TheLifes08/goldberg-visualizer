@@ -13,7 +13,7 @@ public abstract class NetworkViewPainter extends ViewPainter {
     private final double margin = 200;
 
     @Override
-    protected void getNodesParameters(ResidualNetwork<Double> network) {
+    protected void calculateNodesParameters(ResidualNetwork<Double> network) {
         nodeViewParameters.clear();
 
         if (network == null || network.getSource() == null) {

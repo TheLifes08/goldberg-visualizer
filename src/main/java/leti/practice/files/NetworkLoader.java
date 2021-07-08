@@ -52,8 +52,6 @@ public class NetworkLoader {
             return null;
         }
 
-        loadNetwork.printNetwork();
-
         return loadNetwork;
     }
 }

@@ -13,13 +13,13 @@ import leti.practice.structures.graph.ResidualNetwork;
 import java.util.HashMap;
 
 public abstract class ViewPainter {
-    protected Canvas canvas = null;
+    private Canvas canvas = null;
+    private final double nodeSize = 34;
     protected HashMap<Node, NodeViewParameters> nodeViewParameters;
     protected boolean needRecalculateNodesParameters = true;
-    private final double nodeSize = 34;
 
     public abstract void paint(ResidualNetwork<Double> network);
-    protected abstract void getNodesParameters(ResidualNetwork<Double> network);
+    protected abstract void calculateNodesParameters(ResidualNetwork<Double> network);
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;

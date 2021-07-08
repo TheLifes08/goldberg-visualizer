@@ -17,7 +17,7 @@ public class OriginalNetworkViewPainter extends NetworkViewPainter {
 
         if (needRecalculateNodesParameters) {
             layersNodeCount.ensureCapacity(network.getNetworkNodes().size());
-            getNodesParameters(network);
+            calculateNodesParameters(network);
             layersNodeCount.clear();
         }
 
