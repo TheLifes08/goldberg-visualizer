@@ -105,7 +105,7 @@ public class AlgorithmExecutor {
             for(Node to : network.getNetworkEdges(network.getSource()).keySet()){
                 //add flow to edge
                 network.getNetworkEdges(network.getSource()).get(to).setFlow(network.getNetworkEdges(network.getSource()).get(to).getCapacity());
-                logger.log(Level.FINEST, "Push flow though edge "+network.getSource()+" "+to.getName()+ " flow is "+ network.getNetworkEdges(network.getSource()).get(to).getCapacity());
+                logger.log(Level.FINEST, "Push flow though edge "+network.getSource().getName()+" "+to.getName()+ " flow is "+ network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                 //add surplus to the node
                 network.getSurpluses().put(to, network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                 logger.log(Level.FINEST, "Surplus of node "+to.getName()+" is "+network.getSurpluses().get(to));
@@ -133,7 +133,6 @@ public class AlgorithmExecutor {
                                     logger.log(Level.FINEST, "|-----------------------------------|");
                                     logger.log(Level.FINEST, "Make push with node " + node.getName());
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getCapacity() - network.getReverseNetworkEdges(node).get(to).getFlow());
-                                    logger.log(Level.FINEST, "availableAmountOfFlow " + availableAmountOfFlow);
                                     network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
                                     logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge "+node.getName()+" "+to.getName());
                                     network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
@@ -156,7 +155,6 @@ public class AlgorithmExecutor {
                                     logger.log(Level.FINEST, "|-----------------------------------|");
                                     logger.log(Level.FINEST, "Make push with node " + node.getName());
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getNetworkEdges(node).get(to).getCapacity() - network.getNetworkEdges(node).get(to).getFlow());
-                                    logger.log(Level.FINEST, "availableAmountOfFlow " + availableAmountOfFlow);
                                     network.getNetworkEdges(node).get(to).setFlow(network.getNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
                                     logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge "+node.getName()+" "+to.getName());
                                     network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
