@@ -72,12 +72,6 @@ public class ResidualNetwork<T extends Number> {
         /*add Edge*/
         if(from!=null && to!=null && edgeProperties!=null) {
             Double zero = 0.0;
-            if (to.equals(source)) {
-                source = from;
-            }
-            if (from.equals(destination)) {
-                destination = to;
-            }
             if (network.containsKey(from)) {
                 if (!network.get(from).containsKey(to)) {
                     network.get(from).put(to, edgeProperties);
