@@ -111,7 +111,6 @@ public class AlgorithmExecutor {
 
             network.getHeights().put(network.getSource(), amountOfNodes.size());
             //add to the states
-            networkStates.add(network.copy());
             /*First algorithm step*/
             HashMap<Node, EdgeProperties<Double>> sourceEdges = network.getNetworkEdges(network.getSource());
 
@@ -248,12 +247,13 @@ public class AlgorithmExecutor {
 
     public boolean nextStep(){
         if(isNetworkCorrect && !isAlgorithmEnd) {
-            if(stepOfAlgorithm == 0){
-                stepOfAlgorithm++;
-                return initializeNetwork();
-            }
-
             networkStates.add(network.copy());
+
+            if(stepOfAlgorithm <= 0){
+                stepOfAlgorithm = 1;
+                boolean result = initializeNetwork();
+                return result;
+            }
 
             if (relabel()) {
                 stepOfAlgorithm++;
@@ -283,7 +283,6 @@ public class AlgorithmExecutor {
                     isAlgorithmEnd = false;
                 }
 
-                network = null;
                 network = networkStates.get(networkStates.size() - 1);
                 networkStates.remove(networkStates.size() - 1);
                 stepOfAlgorithm--;

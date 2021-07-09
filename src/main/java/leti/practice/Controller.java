@@ -12,6 +12,7 @@ import leti.practice.structures.graph.ResidualNetwork;
 import leti.practice.view.*;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,32 +20,22 @@ public class Controller {
     private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
     private AlgorithmExecutor algorithmExecutor;
     private ResidualNetwork<Double> network;
+    private ResidualNetwork<Double> initialNetwork;
     private NetworkViewPainter networkViewPainter;
     private ResidualNetworkViewPainter residualNetworkViewPainter;
     private HeightFunctionViewPainter heightFunctionViewPainter;
     private ViewPainter viewPainter;
+    private boolean isAlgorithmRan;
 
     public Controller() {
         network = new ResidualNetwork<Double>();
-        algorithmExecutor = new AlgorithmExecutor();
         networkViewPainter = new OriginalNetworkViewPainter();
         residualNetworkViewPainter = new ResidualNetworkViewPainter();
         heightFunctionViewPainter = new HeightFunctionViewPainter();
         viewPainter = residualNetworkViewPainter;
-
-        // NETWORK TEST INPUT
-        addEdge("S", "A", 10.0);
-        addEdge("S", "B", 4.0);
-        addEdge("S", "C", 6.0);
-        addEdge("A", "D", 4.0);
-        addEdge("C", "E", 5.0);
-        addEdge("B", "E", 7.0);
-        addEdge("E", "T", 3.0);
-        addEdge("D", "T", 5.0);
-        network.setSource(new Node("S"));
-        network.setDestination(new Node("T"));
-
-        algorithmExecutor.setNetwork(network);
+        initialNetwork = network;
+        algorithmExecutor = null;
+        isAlgorithmRan = false;
     }
 
     public boolean loadNetwork(File file) {
@@ -53,8 +44,9 @@ public class Controller {
 
         if (network != null) {
             this.network = network;
-            algorithmExecutor = new AlgorithmExecutor();
-            algorithmExecutor.setNetwork(network);
+            initialNetwork = network;
+            algorithmExecutor = null;
+            isAlgorithmRan = false;
 
             if (viewPainter != null) {
                 setNeedRecalculateNodesParameters(true);
@@ -68,7 +60,7 @@ public class Controller {
 
     public boolean saveNetwork(File file) {
         logger.log(Level.INFO, "Save Network Command executed.");
-        return NetworkSaver.saveNetwork(file, network);
+        return NetworkSaver.saveNetwork(file, initialNetwork);
     }
 
     public boolean setView(ViewType viewType) {
@@ -88,6 +80,20 @@ public class Controller {
     public boolean stepForward() {
         logger.log(Level.INFO, "Step Forward Command executed.");
 
+        if (!isAlgorithmRan) {
+            initialNetwork = network.copy();
+            algorithmExecutor = new AlgorithmExecutor();
+
+            try {
+                algorithmExecutor.setNetwork(network);
+            } catch (NullPointerException e) {
+                algorithmExecutor = null;
+                return false;
+            }
+
+            isAlgorithmRan = true;
+        }
+
         if (algorithmExecutor != null) {
             boolean result = algorithmExecutor.nextStep();
             network = algorithmExecutor.getNetwork();
@@ -97,8 +103,34 @@ public class Controller {
         return false;
     }
 
+    public void setSourceAndDestination(String source, String destination) {
+        if (source != null && destination != null) {
+            initialNetwork.setSource(new Node(source));
+            initialNetwork.setDestination(new Node(destination));
+        }
+    }
+
+    public boolean isSourceAndDestinationCorrect() {
+        if (initialNetwork != null) {
+            if (initialNetwork.getSource() == null || initialNetwork.getDestination() == null) {
+                return false;
+            }
+
+            HashSet<Node> nodes = new HashSet<>(initialNetwork.getNetworkNodes());
+            nodes.addAll(initialNetwork.getReverseNetworkNodes());
+
+            return nodes.contains(network.getSource()) && nodes.contains(network.getDestination());
+        }
+
+        return false;
+    }
+
     public boolean stepBackward() {
         logger.log(Level.INFO, "Step Backward Command executed.");
+
+        if (!isAlgorithmRan) {
+            return false;
+        }
 
         if (algorithmExecutor != null) {
             boolean result = algorithmExecutor.previousStep();
@@ -113,7 +145,8 @@ public class Controller {
         logger.log(Level.INFO, "Add Edge Command executed.");
 
         if (source != null && destination != null && capacity != null) {
-            network.addEdge(new Node(source), new Node(destination), new EdgeProperties<Double>(capacity, 0.0));
+            resetAlgorithm();
+            initialNetwork.addEdge(new Node(source), new Node(destination), new EdgeProperties<Double>(capacity, 0.0));
 
             if (viewPainter != null) {
                 setNeedRecalculateNodesParameters(true);
@@ -129,7 +162,8 @@ public class Controller {
         logger.log(Level.INFO, "Remove Edge Command executed.");
 
         if (source != null && destination != null) {
-            network.deleteEdge(new Node(source), new Node(destination));
+            resetAlgorithm();
+            initialNetwork.deleteEdge(new Node(source), new Node(destination));
 
             if (viewPainter != null) {
                 setNeedRecalculateNodesParameters(true);
@@ -141,6 +175,13 @@ public class Controller {
         return false;
     }
 
+    public void resetAlgorithm() {
+        logger.log(Level.INFO, "Reset Command executed.");
+        network = initialNetwork;
+        algorithmExecutor = null;
+        isAlgorithmRan = false;
+    }
+
     public void clearNetwork() {
         logger.log(Level.INFO, "Clear Network Command executed.");
 
@@ -149,8 +190,10 @@ public class Controller {
             setNeedRecalculateNodesParameters(true);
         }
 
-        network = new ResidualNetwork<Double>();
-        algorithmExecutor = new AlgorithmExecutor();
+        initialNetwork = new ResidualNetwork<Double>();
+        network = initialNetwork;
+        algorithmExecutor = null;
+        isAlgorithmRan = false;
     }
 
     public void paintView(Canvas canvas) {

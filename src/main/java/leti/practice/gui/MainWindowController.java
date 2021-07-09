@@ -6,6 +6,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import leti.practice.Controller;
 import leti.practice.commands.*;
+import leti.practice.structures.graph.EdgeProperties;
+import leti.practice.structures.graph.Node;
 
 import java.io.File;
 import java.util.HashMap;
@@ -57,6 +59,9 @@ public class MainWindowController {
         commands.put(CommandType.SET_VIEW_HEIGHT_FUNCTION, new SetViewCommand(controller, ViewType.HEIGHT_FUNCTION));
         commands.put(CommandType.STEP_FORWARD, new StepForwardCommand(controller));
         commands.put(CommandType.STEP_BACKWARD, new StepBackwardCommand(controller));
+        commands.put(CommandType.RESET, new ResetCommand(controller));
+        commands.put(CommandType.SET_SOURCE_AND_DESTINATION, new SetSourceAndDestinationCommand(controller));
+        commands.put(CommandType.CHECK_SOURCE_AND_DESTINATION, new CheckSourceAndDestinationCommand(controller));
         updateNetworkViewAndParameters();
     }
 
@@ -172,6 +177,42 @@ public class MainWindowController {
     }
 
     @FXML
+    private void setSourceAndDestinationButtonPressed() {
+        Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
+                "Enter source and destination (<source> <destination>):");
+
+        if (answer.isPresent()) {
+            SetSourceAndDestinationCommand setSourceAndDestinationCommand =
+                    (SetSourceAndDestinationCommand) commands.get(CommandType.SET_SOURCE_AND_DESTINATION);
+            String input = answer.get();
+
+            boolean success = true;
+            int firstSpaceIndex = input.indexOf(' ');
+
+            try {
+                if (firstSpaceIndex != -1) {
+                    String source = input.substring(0, firstSpaceIndex);
+                    String destination = input.substring(firstSpaceIndex + 1);
+                    setSourceAndDestinationCommand.setSource(source);
+                    setSourceAndDestinationCommand.setDestination(destination);
+                    success = setSourceAndDestinationCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error setting source and destination.");
+                return;
+            }
+
+            updateNetworkViewAndParameters();
+        }
+    }
+
+    @FXML
     private void buttonStepBackwardPressed() {
         commands.get(CommandType.STEP_BACKWARD).execute();
         updateNetworkViewAndParameters();
@@ -179,12 +220,26 @@ public class MainWindowController {
 
     @FXML
     private void buttonStepForwardPressed() {
+        boolean isSourceAndDestinationSet = commands.get(CommandType.CHECK_SOURCE_AND_DESTINATION).execute();
+
+        if (!isSourceAndDestinationSet) {
+            mainWindow.showError("The source or destination is set incorrectly.");
+            return;
+        }
+
         commands.get(CommandType.STEP_FORWARD).execute();
         updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonRunAlgorithmPressed() {
+        boolean isSourceAndDestinationSet = commands.get(CommandType.CHECK_SOURCE_AND_DESTINATION).execute();
+
+        if (!isSourceAndDestinationSet) {
+            mainWindow.showError("The source or destination is set incorrectly.");
+            return;
+        }
+
         StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
         boolean stepResult;
 
@@ -195,8 +250,10 @@ public class MainWindowController {
     }
 
     @FXML
-    private void buttonReset() {
-
+    private void buttonResetPressed() {
+        Command command = commands.get(CommandType.RESET);
+        command.execute();
+        updateNetworkViewAndParameters();
     }
 
     @FXML
@@ -205,7 +262,33 @@ public class MainWindowController {
                 "Enter edge (<source> <destination> <capacity>):");
 
         if (answer.isPresent()) {
+            AddEdgeCommand addEdgeCommand = (AddEdgeCommand) commands.get(CommandType.ADD_EDGE);
             String input = answer.get();
+
+            boolean success = true;
+            int firstSpaceIndex = input.indexOf(' ');
+            int secondSpaceIndex = input.lastIndexOf(' ');
+
+            try {
+                if (firstSpaceIndex != -1 && secondSpaceIndex != -1) {
+                    String source = input.substring(0, firstSpaceIndex);
+                    String destination = input.substring(firstSpaceIndex + 1, secondSpaceIndex);
+                    Double capacity = Double.valueOf(input.substring(secondSpaceIndex + 1));
+                    addEdgeCommand.setSource(source);
+                    addEdgeCommand.setDestination(destination);
+                    addEdgeCommand.setCapacity(capacity);
+                    addEdgeCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error adding an edge: Invalid format.");
+                return;
+            }
 
             updateNetworkViewAndParameters();
         }
@@ -217,7 +300,30 @@ public class MainWindowController {
                 "Enter edge (<source> <destination>):");
 
         if (answer.isPresent()) {
+            RemoveEdgeCommand removeEdgeCommand = (RemoveEdgeCommand) commands.get(CommandType.REMOVE_EDGE);
             String input = answer.get();
+
+            boolean success = true;
+            int spaceIndex = input.indexOf(' ');
+
+            try {
+                if (spaceIndex != -1) {
+                    String source = input.substring(0, spaceIndex);
+                    String destination = input.substring(spaceIndex + 1);
+                    removeEdgeCommand.setSource(source);
+                    removeEdgeCommand.setDestination(destination);
+                    removeEdgeCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error removing an edge: Invalid format.");
+                return;
+            }
 
             updateNetworkViewAndParameters();
         }

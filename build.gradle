@@ -10,6 +10,12 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'leti.practice.Launcher'
+    }
+}
+
 javafx {
     version = "16"
     modules = [ 'javafx.controls', 'javafx.fxml' ]
@@ -26,4 +32,4 @@ test {
     useJUnitPlatform()
 }
 
-mainClassName = "leti.practice.App"
+mainClassName = "leti.practice.Launcher"

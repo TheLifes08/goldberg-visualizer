@@ -2,12 +2,12 @@ package leti.practice.commands;
 
 import leti.practice.Controller;
 
-public class AddEdgeCommand implements Command {
+public class SetSourceAndDestinationCommand implements Command {
     private final Controller controller;
-    private String source, destination;
-    private Double capacity;
+    private String source;
+    private String destination;
 
-    public AddEdgeCommand(Controller controller) {
+    public SetSourceAndDestinationCommand(Controller controller) {
         this.controller = controller;
     }
 
@@ -19,14 +19,10 @@ public class AddEdgeCommand implements Command {
         this.destination = destination;
     }
 
-    public void setCapacity(Double capacity) {
-        this.capacity = capacity;
-    }
-
     @Override
     public boolean execute() {
         if (controller != null) {
-            controller.addEdge(source, destination, capacity);
+            controller.setSourceAndDestination(source, destination);
             return true;
         } else {
             return false;
