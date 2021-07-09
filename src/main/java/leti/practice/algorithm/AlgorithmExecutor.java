@@ -237,7 +237,6 @@ public class AlgorithmExecutor {
                         logger.log(Level.FINEST, "Height of node " + node.getName()+" is "+network.getHeights().get(node));
                         logger.log(Level.FINEST, "|-----------------------------------|");
                         return true;
-                        //lalalalal
                     }
 
                 }
