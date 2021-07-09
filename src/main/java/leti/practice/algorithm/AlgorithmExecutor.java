@@ -44,7 +44,7 @@ public class AlgorithmExecutor {
             throw new NullPointerException();
         }
 
-        if (network.getSource() == null && network.getDestination()==null){
+        if (network.getSource() == null || network.getDestination()==null){
             throw new NullPointerException();
         }
 
