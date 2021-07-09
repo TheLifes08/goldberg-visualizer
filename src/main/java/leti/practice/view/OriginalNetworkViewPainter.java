@@ -15,6 +15,10 @@ public class OriginalNetworkViewPainter extends NetworkViewPainter {
     public void paint(ResidualNetwork<Double> network) {
         clearCanvas();
 
+        if (network == null) {
+            return;
+        }
+
         if (needRecalculateNodesParameters) {
             layersNodeCount.ensureCapacity(network.getNetworkNodes().size());
             calculateNodesParameters(network);

@@ -8,6 +8,16 @@ import java.util.HashSet;
 
 public class NetworkParametersFormatter {
     public static String getNetworkParameters(ResidualNetwork<Double> network) {
+        if (network == null) {
+            return """
+                    Nodes (<name> <surplus> <height>):
+
+                    Edges (<source> <destination> <flow> <capacity>):
+
+                    Reverse edges (<source> <destination> <flow> <capacity>):
+                    """;
+        }
+
         StringBuilder result = new StringBuilder();
         HashSet<Node> nodes = new HashSet<>(network.getNetworkNodes());
 
