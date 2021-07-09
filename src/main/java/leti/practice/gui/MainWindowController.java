@@ -195,6 +195,11 @@ public class MainWindowController {
     }
 
     @FXML
+    private void buttonReset() {
+
+    }
+
+    @FXML
     private void buttonAddEdgePressed() {
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter edge (<source> <destination> <capacity>):");
