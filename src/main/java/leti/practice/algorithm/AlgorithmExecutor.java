@@ -246,22 +246,37 @@ public class AlgorithmExecutor {
     }
 
     public boolean nextStep(){
-        if(isNetworkCorrect && !isAlgorithmEnd) {
-            networkStates.add(network.copy());
+        network.printNetwork();
 
-            if(stepOfAlgorithm <= 0){
-                stepOfAlgorithm = 1;
-                boolean result = initializeNetwork();
-                return result;
+        if (isNetworkCorrect && !isAlgorithmEnd) {
+            ResidualNetwork<Double> previousNetwork = network.copy();
+
+            if (networkStates.size() == 0){
+                if (initializeNetwork()) {
+                    networkStates.add(previousNetwork);
+                    for (ResidualNetwork<Double> network : networkStates) {
+                        network.printNetwork();
+                        logger.log(Level.INFO, "-----------");
+                    }
+                    return true;
+                }
             }
 
             if (relabel()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork);
+                for (ResidualNetwork<Double> network : networkStates) {
+                    network.printNetwork();
+                    logger.log(Level.INFO, "-----------");
+                }
                 return true;
             }
 
             if (push()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork);
+                for (ResidualNetwork<Double> network : networkStates) {
+                    network.printNetwork();
+                    logger.log(Level.INFO, "-----------");
+                }
                 return true;
             }
 
@@ -277,18 +292,13 @@ public class AlgorithmExecutor {
     }
 
     public boolean previousStep(){
-        if(isNetworkCorrect) {
-            if (networkStates.size() != 0) {
-                if (isAlgorithmEnd) {
-                    isAlgorithmEnd = false;
-                }
-
-                network = networkStates.get(networkStates.size() - 1);
-                networkStates.remove(networkStates.size() - 1);
-                stepOfAlgorithm--;
-
-                return true;
+        if(isNetworkCorrect && networkStates.size() > 0) {
+            if (isAlgorithmEnd) {
+                isAlgorithmEnd = false;
             }
+
+            network = networkStates.get(networkStates.size() - 1);
+            networkStates.remove(networkStates.size() - 1);
         }
 
         return false;
