@@ -199,12 +199,12 @@ public class AlgorithmExecutor {
                 //Если переполнение
                 boolean flag = false;
 
-                if (network.getSurpluses().get(node) > 0) {
-                    if(network.getNetworkNodes().contains(node)){
-                        ArrayList<Integer> heights = new ArrayList<>();
+                if (network.getSurpluses().get(node) > 0){
+                    ArrayList<Integer> heights = new ArrayList<>();
 
-                        for(Node to :network.getNetworkEdges(node).keySet()){
-                            if(!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
+                    if(network.getNetworkNodes().contains(node)) {
+                        for (Node to : network.getNetworkEdges(node).keySet()) {
+                            if (!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
                                 if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                     flag = true;
                                     break;
@@ -213,8 +213,9 @@ public class AlgorithmExecutor {
                                 heights.add(network.getHeights().get(to));
                             }
                         }
-
-                        if(network.getReverseNetworkNodes().contains(node) && !flag){
+                    }
+                    if(network.getReverseNetworkNodes().contains(node)){
+                        if(network.getReverseNetworkNodes().contains(node)){
                             for (Node to : network.getReverseNetworkEdges(node).keySet()){
                                 if(!network.getReverseNetworkEdges(node).get(to).getFlow().equals(network.getReverseNetworkEdges(node).get(to).getCapacity())) {
                                     if (network.getHeights().get(node) > network.getHeights().get(to)) {
@@ -227,17 +228,17 @@ public class AlgorithmExecutor {
 
                             }
                         }
-
-                        if(!flag){
-                            logger.log(Level.FINEST, "|-----------------------------------|");
-                            logger.log(Level.FINEST, "Make relabel with node " + node.getName());
-                            logger.log(Level.FINEST, "Height of node " + node.getName()+" was "+network.getHeights().get(node));
-                            network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
-                            logger.log(Level.FINEST, "Height of node " + node.getName()+" is "+network.getHeights().get(node));
-                            logger.log(Level.FINEST, "|-----------------------------------|");
-                            return true;
-                        }
                     }
+                    if(!flag){
+                        logger.log(Level.FINEST, "|-----------------------------------|");
+                        logger.log(Level.FINEST, "Make relabel with node " + node.getName());
+                        logger.log(Level.FINEST, "Height of node " + node.getName()+" was "+network.getHeights().get(node));
+                        network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
+                        logger.log(Level.FINEST, "Height of node " + node.getName()+" is "+network.getHeights().get(node));
+                        logger.log(Level.FINEST, "|-----------------------------------|");
+                        return true;
+                    }
+
                 }
             }
         }
@@ -246,37 +247,21 @@ public class AlgorithmExecutor {
     }
 
     public boolean nextStep(){
-        network.printNetwork();
+        if(isNetworkCorrect && !isAlgorithmEnd) {
+            networkStates.add(network.copy());
 
-        if (isNetworkCorrect && !isAlgorithmEnd) {
-            ResidualNetwork<Double> previousNetwork = network.copy();
-
-            if (networkStates.size() == 0){
-                if (initializeNetwork()) {
-                    networkStates.add(previousNetwork);
-                    for (ResidualNetwork<Double> network : networkStates) {
-                        network.printNetwork();
-                        logger.log(Level.INFO, "-----------");
-                    }
-                    return true;
-                }
+            if(stepOfAlgorithm <= 0){
+                stepOfAlgorithm = 1;
+                return initializeNetwork();
             }
 
             if (relabel()) {
-                networkStates.add(previousNetwork);
-                for (ResidualNetwork<Double> network : networkStates) {
-                    network.printNetwork();
-                    logger.log(Level.INFO, "-----------");
-                }
+                stepOfAlgorithm++;
                 return true;
             }
 
             if (push()) {
-                networkStates.add(previousNetwork);
-                for (ResidualNetwork<Double> network : networkStates) {
-                    network.printNetwork();
-                    logger.log(Level.INFO, "-----------");
-                }
+                stepOfAlgorithm++;
                 return true;
             }
 
@@ -292,13 +277,18 @@ public class AlgorithmExecutor {
     }
 
     public boolean previousStep(){
-        if(isNetworkCorrect && networkStates.size() > 0) {
-            if (isAlgorithmEnd) {
-                isAlgorithmEnd = false;
-            }
+        if(isNetworkCorrect) {
+            if (networkStates.size() != 0) {
+                if (isAlgorithmEnd) {
+                    isAlgorithmEnd = false;
+                }
 
-            network = networkStates.get(networkStates.size() - 1);
-            networkStates.remove(networkStates.size() - 1);
+                network = networkStates.get(networkStates.size() - 1);
+                networkStates.remove(networkStates.size() - 1);
+                stepOfAlgorithm--;
+
+                return true;
+            }
         }
 
         return false;
