@@ -8,6 +8,10 @@ public class HeightFunctionViewPainter extends ViewPainter {
     @Override
     public void paint(ResidualNetwork<Double> network) {
         clearCanvas();
+
+        if (network == null) {
+            return;
+        }
     }
 
     @Override
