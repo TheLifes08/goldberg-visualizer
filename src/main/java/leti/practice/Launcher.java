@@ -2,18 +2,23 @@ package leti.practice;
 
 public class Launcher {
     public static void main(String[] args) {
-        boolean isCLI = false;
+        boolean isConsoleLineInterface = false;
 
         for (String arg : args) {
             if (arg.equals("-cli")) {
-                isCLI = true;
+                isConsoleLineInterface = true;
+                break;
             }
         }
 
-        if (isCLI) {
-            System.out.println("CLI!");
+        if (isConsoleLineInterface) {
+            runCLI(args);
         } else {
             App.main(args);
         }
+    }
+
+    public static void runCLI(String[] args) {
+
     }
 }

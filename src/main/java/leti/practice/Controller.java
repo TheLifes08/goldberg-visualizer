@@ -43,10 +43,10 @@ public class Controller {
         ResidualNetwork<Double> network = NetworkLoader.loadNetwork(file);
 
         if (network != null) {
-            this.network = network;
             initialNetwork = network;
-            algorithmExecutor = null;
-            isAlgorithmRan = false;
+            resetAlgorithm();
+
+            isSourceAndDestinationCorrect();
 
             if (viewPainter != null) {
                 setNeedRecalculateNodesParameters(true);
@@ -107,6 +107,8 @@ public class Controller {
         if (source != null && destination != null) {
             initialNetwork.setSource(new Node(source));
             initialNetwork.setDestination(new Node(destination));
+            resetAlgorithm();
+            setNeedRecalculateNodesParameters(true);
         }
     }
 

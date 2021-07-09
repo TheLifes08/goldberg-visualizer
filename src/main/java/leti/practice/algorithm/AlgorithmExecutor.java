@@ -103,6 +103,9 @@ public class AlgorithmExecutor {
         if(isNetworkCorrect){
             logger.log(Level.FINEST, "|------------------------------|\nStart Initialization of network");
 
+            amountOfNodes.add(network.getDestination());
+            amountOfNodes.add(network.getSource());
+
             /*Initialization of heights and surplus function*/
             for (Node node:amountOfNodes){
                 network.getHeights().put(node, 0);
@@ -195,13 +198,16 @@ public class AlgorithmExecutor {
 
     private boolean relabel(){
         if(isNetworkCorrect){
+            for (Node node : network.getNetworkNodes()) {
+                System.out.println(node.getName() + " " + network.getHeights().get(node));
+            }
+
             for(Node node : amountOfNodes) {
                 //Если переполнение
                 boolean flag = false;
 
                 if (network.getSurpluses().get(node) > 0){
                     ArrayList<Integer> heights = new ArrayList<>();
-
                     if(network.getNetworkNodes().contains(node)) {
                         for (Node to : network.getNetworkEdges(node).keySet()) {
                             if (!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
@@ -248,20 +254,23 @@ public class AlgorithmExecutor {
 
     public boolean nextStep(){
         if(isNetworkCorrect && !isAlgorithmEnd) {
-            networkStates.add(network.copy());
+            ResidualNetwork<Double> previousNetwork = network.copy();
 
-            if(stepOfAlgorithm <= 0){
-                stepOfAlgorithm = 1;
-                return initializeNetwork();
+            if (networkStates.size() == 0){
+                if (initializeNetwork()) {
+                    networkStates.add(previousNetwork.copy());
+                    return true;
+                }
+                return false;
             }
 
             if (relabel()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork.copy());
                 return true;
             }
 
             if (push()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork.copy());
                 return true;
             }
 
@@ -285,7 +294,9 @@ public class AlgorithmExecutor {
 
                 network = networkStates.get(networkStates.size() - 1);
                 networkStates.remove(networkStates.size() - 1);
-                stepOfAlgorithm--;
+
+                network.printNetwork();
+                System.out.println(networkStates.size());
 
                 return true;
             }
