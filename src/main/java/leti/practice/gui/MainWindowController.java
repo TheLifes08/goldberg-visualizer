@@ -1,17 +1,18 @@
 package leti.practice.gui;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
+import javafx.util.Duration;
 import leti.practice.Controller;
 import leti.practice.commands.*;
-import leti.practice.structures.graph.EdgeProperties;
-import leti.practice.structures.graph.Node;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +22,7 @@ public class MainWindowController {
     private HashMap<CommandType, Command> commands;
     private ViewType viewType = ViewType.RESIDUAL_NETWORK;
     private boolean intermediateMessagesEnabled = true;
+    private AtomicBoolean isAnimationExecuting;
 
     @FXML
     private TextArea console;
@@ -32,6 +34,7 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         commands = new HashMap<CommandType, Command>();
+        isAnimationExecuting = new AtomicBoolean(false);
     }
 
     public void setMainWindow(MainWindow mainWindow) {
@@ -75,6 +78,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonLoadPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         File file = mainWindow.showFileDialog(FileDialogType.LOAD);
 
         if (file != null) {
@@ -178,6 +185,10 @@ public class MainWindowController {
 
     @FXML
     private void setSourceAndDestinationButtonPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter source and destination (<source> <destination>):");
 
@@ -214,12 +225,20 @@ public class MainWindowController {
 
     @FXML
     private void buttonStepBackwardPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         commands.get(CommandType.STEP_BACKWARD).execute();
         updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonStepForwardPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         boolean isSourceAndDestinationSet = commands.get(CommandType.CHECK_SOURCE_AND_DESTINATION).execute();
 
         if (!isSourceAndDestinationSet) {
@@ -240,17 +259,29 @@ public class MainWindowController {
             return;
         }
 
-        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
-        boolean stepResult;
+        isAnimationExecuting.set(true);
 
-        do {
-            stepResult = stepForwardCommand.execute();
+        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
+        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        pause.setOnFinished(event -> {
+            boolean stepResult = stepForwardCommand.execute();
             updateNetworkViewAndParameters();
-        } while (stepResult);
+
+            if (stepResult) {
+                pause.play();
+            } else {
+                isAnimationExecuting.set(false);
+            }
+        });
+        pause.play();
     }
 
     @FXML
     private void buttonResetPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Command command = commands.get(CommandType.RESET);
         command.execute();
         updateNetworkViewAndParameters();
@@ -258,6 +289,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonAddEdgePressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter edge (<source> <destination> <capacity>):");
 
@@ -296,6 +331,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonRemoveEdgePressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter edge (<source> <destination>):");
 
@@ -331,6 +370,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonClearNetworkPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         commands.get(CommandType.CLEAR_NETWORK).execute();
         updateNetworkViewAndParameters();
     }
