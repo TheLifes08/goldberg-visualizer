@@ -35,6 +35,26 @@ public class MainWindowController {
     private void initialize() {
         commands = new HashMap<CommandType, Command>();
         isAnimationExecuting = new AtomicBoolean(false);
+
+        canvas.setOnMousePressed(event -> {
+            SelectAndMoveNodeCommand command = (SelectAndMoveNodeCommand)
+                    commands.get(CommandType.SELECT_AND_MOVE_NODE);
+
+            command.setX(Math.max(event.getX(), 0.0));
+            command.setY(Math.max(event.getY(), 0.0));
+            command.execute();
+            updateNetworkViewAndParameters();
+        });
+
+        canvas.setOnMouseReleased(event -> {
+            SelectAndMoveNodeCommand command = (SelectAndMoveNodeCommand)
+                    commands.get(CommandType.SELECT_AND_MOVE_NODE);
+
+            command.setX(Math.max(event.getX(), 0.0));
+            command.setY(Math.max(event.getY(), 0.0));
+            command.execute();
+            updateNetworkViewAndParameters();
+        });
     }
 
     public void setMainWindow(MainWindow mainWindow) {
@@ -65,6 +85,7 @@ public class MainWindowController {
         commands.put(CommandType.RESET, new ResetCommand(controller));
         commands.put(CommandType.SET_SOURCE_AND_DESTINATION, new SetSourceAndDestinationCommand(controller));
         commands.put(CommandType.CHECK_SOURCE_AND_DESTINATION, new CheckSourceAndDestinationCommand(controller));
+        commands.put(CommandType.SELECT_AND_MOVE_NODE, new SelectAndMoveNodeCommand(controller));
         updateNetworkViewAndParameters();
     }
 
@@ -260,7 +281,7 @@ public class MainWindowController {
                         "Maximum network flow: " + stepForwardCommand.getAlgorithmResult());
             }
             case INCORRECT_NETWORK -> {
-                mainWindow.showError("The source or destination is set incorrectly.");
+                mainWindow.showError("The network is incorrect.");
             }
             case ERROR -> mainWindow.showError("Unknown error occurred.");
         }

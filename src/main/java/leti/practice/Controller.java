@@ -27,6 +27,7 @@ public class Controller {
     private HeightFunctionViewPainter heightFunctionViewPainter;
     private ViewPainter viewPainter;
     private boolean isAlgorithmRan;
+    private String selectedNode;
 
     public Controller() {
         initialNetwork = new ResidualNetwork<Double>();
@@ -37,16 +38,17 @@ public class Controller {
         network = initialNetwork;
         algorithmExecutor = null;
         isAlgorithmRan = false;
+        selectedNode = null;
     }
 
     public boolean loadNetwork(File file) {
-        logger.log(Level.INFO, "Load Network Command executed.");
         ResidualNetwork<Double> network = NetworkLoader.loadNetwork(file);
 
         if (network != null) {
             initialNetwork = network;
             resetAlgorithm();
             setNeedRecalculateNodesParameters(true);
+            selectedNode = null;
             return true;
         }
 
@@ -54,7 +56,6 @@ public class Controller {
     }
 
     public boolean saveNetwork(File file) {
-        logger.log(Level.INFO, "Save Network Command executed.");
         return NetworkSaver.saveNetwork(file, initialNetwork);
     }
 
@@ -73,15 +74,20 @@ public class Controller {
     }
 
     public StepForwardResult stepForward() {
-        logger.log(Level.INFO, "Step Forward Command executed.");
-
         if (!isAlgorithmRan) {
+            boolean isNetworkSet = false;
+
             initialNetwork = network.copy();
             algorithmExecutor = new AlgorithmExecutor();
 
             try {
-                algorithmExecutor.setNetwork(network);
+                isNetworkSet = algorithmExecutor.setNetwork(network);
             } catch (NullPointerException e) {
+                algorithmExecutor = null;
+                return StepForwardResult.INCORRECT_NETWORK;
+            }
+
+            if (!isNetworkSet) {
                 algorithmExecutor = null;
                 return StepForwardResult.INCORRECT_NETWORK;
             }
@@ -94,6 +100,7 @@ public class Controller {
             network = algorithmExecutor.getNetwork();
 
             if (result) {
+                logger.log(Level.INFO, "Step Forward Command completed.");
                 return StepForwardResult.SUCCESS;
             } else {
                 return StepForwardResult.END_ALGORITHM;
@@ -124,8 +131,6 @@ public class Controller {
     }
 
     public boolean stepBackward() {
-        logger.log(Level.INFO, "Step Backward Command executed.");
-
         if (!isAlgorithmRan) {
             return false;
         }
@@ -133,6 +138,11 @@ public class Controller {
         if (algorithmExecutor != null) {
             boolean result = algorithmExecutor.previousStep();
             network = algorithmExecutor.getNetwork();
+
+            if (result) {
+                logger.log(Level.INFO, "Step Backward Command executed.");
+            }
+
             return result;
         }
 
@@ -140,12 +150,11 @@ public class Controller {
     }
 
     public boolean addEdge(String source, String destination, Double capacity) {
-        logger.log(Level.INFO, "Add Edge Command executed.");
-
         if (source != null && destination != null && capacity != null) {
             resetAlgorithm();
             initialNetwork.addEdge(new Node(source), new Node(destination), new EdgeProperties<Double>(capacity, 0.0));
             setNeedRecalculateNodesParameters(true);
+            selectedNode = null;
             return true;
         }
 
@@ -153,12 +162,11 @@ public class Controller {
     }
 
     public boolean removeEdge(String source, String destination) {
-        logger.log(Level.INFO, "Remove Edge Command executed.");
-
         if (source != null && destination != null) {
             resetAlgorithm();
             initialNetwork.deleteEdge(new Node(source), new Node(destination));
             setNeedRecalculateNodesParameters(true);
+            selectedNode = null;
             return true;
         }
 
@@ -166,18 +174,18 @@ public class Controller {
     }
 
     public void resetAlgorithm() {
-        logger.log(Level.INFO, "Reset Command executed.");
         network = initialNetwork;
         algorithmExecutor = null;
         isAlgorithmRan = false;
     }
 
     public void clearNetwork() {
-        logger.log(Level.INFO, "Clear Network Command executed.");
+        logger.log(Level.INFO, "Clear Network Command completed.");
 
         if (viewPainter.isCanvasSet()) {
             viewPainter.clearCanvas();
             setNeedRecalculateNodesParameters(true);
+            selectedNode = null;
         }
 
         initialNetwork = new ResidualNetwork<Double>();
@@ -203,6 +211,27 @@ public class Controller {
         }
 
         return 0.0;
+    }
+
+    public boolean selectAndMoveNetworkNode(double x, double y) {
+        if (selectedNode != null) {
+            boolean result = viewPainter.setNodePosition(selectedNode, x, y);
+
+            if (result) {
+                logger.log(Level.INFO, "Set node '" + selectedNode + "' position to X=" + x + "; Y=" + y);
+            }
+
+            selectedNode = null;
+            return result;
+        } else {
+            selectedNode = viewPainter.getNodeNameByPosition(x, y);
+
+            if (selectedNode != null) {
+                logger.log(Level.INFO, "Node '" + selectedNode + "' selected.");
+            }
+
+            return selectedNode == null;
+        }
     }
 
     private void setNeedRecalculateNodesParameters(boolean value) {

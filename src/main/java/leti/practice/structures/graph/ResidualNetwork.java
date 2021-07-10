@@ -75,11 +75,9 @@ public class ResidualNetwork<T extends Number> {
             Double zero = 0.0;
             if (network.containsKey(from)) {
                 network.get(from).put(to, edgeProperties);
-                logger.log(Level.FINEST, String.format("Edge {%s} {%s} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
             } else {
                 network.put(from, new HashMap<>());
                 network.get(from).put(to, edgeProperties);
-                logger.log(Level.FINEST, String.format("Edge {%s} {%s} with capacity {} is added", from.getName(), to.getName(), edgeProperties.toString()));
             }
 
             // Add reverse edge
@@ -100,7 +98,6 @@ public class ResidualNetwork<T extends Number> {
                 network.remove(from);
             }
         }
-        else {logger.log(Level.FINEST, String.format("No Edge {%s} {%s}", from.getName(), to.getName()));}
         if(reverseNetwork.containsKey(to)){
             reverseNetwork.get(to).remove(from);
             if(reverseNetwork.get(to).size() == 0){
@@ -128,6 +125,7 @@ public class ResidualNetwork<T extends Number> {
     }
 
     public void printNetwork(){
+        System.out.println("Edges:");
         for (Node from : network.keySet()) {
             for (Node to : network.get(from).keySet()) {
                 System.out.println(from.getName()+" "+to.getName()+" "+network.get(from).get(to).getCapacity()+" "+network.get(from).get(to).getFlow());

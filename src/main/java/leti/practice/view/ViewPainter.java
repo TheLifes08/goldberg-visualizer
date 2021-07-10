@@ -75,10 +75,14 @@ public abstract class ViewPainter {
 
     public String getNodeNameByPosition(double x, double y) {
         for (Node node : nodeViewParameters.keySet()) {
-            NodeViewParameters nodeParams;
+            NodeViewParameters nodeParams = nodeViewParameters.get(node);
+
+            if (Math.abs(nodeParams.x - x) <= nodeSize && Math.abs(nodeParams.y - y) <= nodeSize) {
+                return node.getName();
+            }
         }
 
-        return "";
+        return null;
     }
 
     public void paintNode(double x, double y, String name) {
