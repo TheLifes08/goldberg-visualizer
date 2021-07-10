@@ -2,6 +2,7 @@ package leti.practice;
 
 import javafx.scene.canvas.Canvas;
 import leti.practice.algorithm.AlgorithmExecutor;
+import leti.practice.commands.StepForwardResult;
 import leti.practice.files.NetworkLoader;
 import leti.practice.files.NetworkSaver;
 import leti.practice.gui.MainWindow;
@@ -28,12 +29,12 @@ public class Controller {
     private boolean isAlgorithmRan;
 
     public Controller() {
-        network = new ResidualNetwork<Double>();
+        initialNetwork = new ResidualNetwork<Double>();
         networkViewPainter = new OriginalNetworkViewPainter();
         residualNetworkViewPainter = new ResidualNetworkViewPainter();
         heightFunctionViewPainter = new HeightFunctionViewPainter();
         viewPainter = residualNetworkViewPainter;
-        initialNetwork = network;
+        network = initialNetwork;
         algorithmExecutor = null;
         isAlgorithmRan = false;
     }
@@ -77,7 +78,7 @@ public class Controller {
         return true;
     }
 
-    public boolean stepForward() {
+    public StepForwardResult stepForward() {
         logger.log(Level.INFO, "Step Forward Command executed.");
 
         if (!isAlgorithmRan) {
@@ -88,7 +89,7 @@ public class Controller {
                 algorithmExecutor.setNetwork(network);
             } catch (NullPointerException e) {
                 algorithmExecutor = null;
-                return false;
+                return StepForwardResult.INCORRECT_NETWORK;
             }
 
             isAlgorithmRan = true;
@@ -97,10 +98,15 @@ public class Controller {
         if (algorithmExecutor != null) {
             boolean result = algorithmExecutor.nextStep();
             network = algorithmExecutor.getNetwork();
-            return result;
+
+            if (result) {
+                return StepForwardResult.SUCCESS;
+            } else {
+                return StepForwardResult.END_ALGORITHM;
+            }
         }
 
-        return false;
+        return StepForwardResult.ERROR;
     }
 
     public void setSourceAndDestination(String source, String destination) {
@@ -113,18 +119,14 @@ public class Controller {
     }
 
     public boolean isSourceAndDestinationCorrect() {
-        if (initialNetwork != null) {
-            if (initialNetwork.getSource() == null || initialNetwork.getDestination() == null) {
-                return false;
-            }
-
-            HashSet<Node> nodes = new HashSet<>(initialNetwork.getNetworkNodes());
-            nodes.addAll(initialNetwork.getReverseNetworkNodes());
-
-            return nodes.contains(network.getSource()) && nodes.contains(network.getDestination());
+        if (initialNetwork.getSource() == null || initialNetwork.getDestination() == null) {
+            return false;
         }
 
-        return false;
+        HashSet<Node> nodes = new HashSet<>(initialNetwork.getNetworkNodes());
+        nodes.addAll(initialNetwork.getReverseNetworkNodes());
+
+        return nodes.contains(network.getSource()) && nodes.contains(network.getDestination());
     }
 
     public boolean stepBackward() {
@@ -207,6 +209,14 @@ public class Controller {
 
     public String getNetworkParameters() {
         return NetworkParametersFormatter.getNetworkParameters(network);
+    }
+
+    public double getNetworkMaxFlow() {
+        if (algorithmExecutor != null) {
+            return algorithmExecutor.getMaxFlow();
+        }
+
+        return 0.0;
     }
 
     private void setNeedRecalculateNodesParameters(boolean value) {

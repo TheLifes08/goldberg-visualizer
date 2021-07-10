@@ -198,10 +198,6 @@ public class AlgorithmExecutor {
 
     private boolean relabel(){
         if(isNetworkCorrect){
-            for (Node node : network.getNetworkNodes()) {
-                System.out.println(node.getName() + " " + network.getHeights().get(node));
-            }
-
             for(Node node : amountOfNodes) {
                 //Если переполнение
                 boolean flag = false;

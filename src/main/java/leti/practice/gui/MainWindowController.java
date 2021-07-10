@@ -167,6 +167,8 @@ public class MainWindowController {
                 Button '<-': Go back to the previous step of the algorithm.
                 Button '->': Perform the next step of the algorithm.
                 Button 'Steps to the finish': Run the algorithm until it is completed.
+                Button 'Reset': Reset the algorithm to its original state.
+                Button 'Set the source and destination': Set the source and destination for the network.
                 Button 'Add edge': Add an edge to the network.
                 Button 'Remove edge': Remove an edge from the network.
                 Button 'Clear network': Clears the network.
@@ -246,8 +248,22 @@ public class MainWindowController {
             return;
         }
 
-        commands.get(CommandType.STEP_FORWARD).execute();
+        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
+
+        stepForwardCommand.execute();
         updateNetworkViewAndParameters();
+
+        switch (stepForwardCommand.getResult()) {
+            case END_ALGORITHM -> {
+                mainWindow.showDialog(Alert.AlertType.INFORMATION,
+                        "Information Dialog", "The work of the algorithm is completed.",
+                        "Maximum network flow: " + stepForwardCommand.getAlgorithmResult());
+            }
+            case INCORRECT_NETWORK -> {
+                mainWindow.showError("The source or destination is set incorrectly.");
+            }
+            case ERROR -> mainWindow.showError("Unknown error occurred.");
+        }
     }
 
     @FXML
