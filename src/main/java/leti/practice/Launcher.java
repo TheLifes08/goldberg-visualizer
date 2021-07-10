@@ -12,8 +12,8 @@ public class Launcher {
         }
 
         if (isConsoleLineInterface) {
-            CLIController cliController = new CLIController(args);
-            cliController.startCli();
+            ConsoleController consoleController = new ConsoleController();
+            consoleController.run(args);
         } else {
             App.main(args);
         }

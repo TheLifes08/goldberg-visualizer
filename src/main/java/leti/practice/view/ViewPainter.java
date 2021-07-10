@@ -60,6 +60,27 @@ public abstract class ViewPainter {
         needRecalculateNodesParameters = value;
     }
 
+    public boolean setNodePosition(String nodeName, double x, double y) {
+        Node node = new Node(nodeName);
+
+        if (nodeViewParameters.containsKey(node)) {
+            NodeViewParameters nodeParams = nodeViewParameters.get(node);
+            nodeParams.x = x;
+            nodeParams.y = y;
+            return true;
+        }
+
+        return false;
+    }
+
+    public String getNodeNameByPosition(double x, double y) {
+        for (Node node : nodeViewParameters.keySet()) {
+            NodeViewParameters nodeParams;
+        }
+
+        return "";
+    }
+
     public void paintNode(double x, double y, String name) {
         paintNode(x, y, name, Color.BLACK);
     }
