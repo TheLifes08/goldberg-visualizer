@@ -25,8 +25,6 @@ public class HeightFunctionViewPainter extends ViewPainter {
             return;
         }
 
-        System.out.println("CALC");
-
         calculateNodesParameters(network);
 
         GraphicsContext gc = getCanvas().getGraphicsContext2D();
