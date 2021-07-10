@@ -46,13 +46,7 @@ public class Controller {
         if (network != null) {
             initialNetwork = network;
             resetAlgorithm();
-
-            isSourceAndDestinationCorrect();
-
-            if (viewPainter != null) {
-                setNeedRecalculateNodesParameters(true);
-            }
-
+            setNeedRecalculateNodesParameters(true);
             return true;
         }
 
@@ -151,11 +145,7 @@ public class Controller {
         if (source != null && destination != null && capacity != null) {
             resetAlgorithm();
             initialNetwork.addEdge(new Node(source), new Node(destination), new EdgeProperties<Double>(capacity, 0.0));
-
-            if (viewPainter != null) {
-                setNeedRecalculateNodesParameters(true);
-            }
-
+            setNeedRecalculateNodesParameters(true);
             return true;
         }
 
@@ -168,11 +158,7 @@ public class Controller {
         if (source != null && destination != null) {
             resetAlgorithm();
             initialNetwork.deleteEdge(new Node(source), new Node(destination));
-
-            if (viewPainter != null) {
-                setNeedRecalculateNodesParameters(true);
-            }
-
+            setNeedRecalculateNodesParameters(true);
             return true;
         }
 
@@ -189,7 +175,7 @@ public class Controller {
     public void clearNetwork() {
         logger.log(Level.INFO, "Clear Network Command executed.");
 
-        if (viewPainter != null && viewPainter.isCanvasSet()) {
+        if (viewPainter.isCanvasSet()) {
             viewPainter.clearCanvas();
             setNeedRecalculateNodesParameters(true);
         }
@@ -221,7 +207,6 @@ public class Controller {
 
     private void setNeedRecalculateNodesParameters(boolean value) {
         networkViewPainter.setNeedRecalculateNodesParameters(value);
-        heightFunctionViewPainter.setNeedRecalculateNodesParameters(value);
         residualNetworkViewPainter.setNeedRecalculateNodesParameters(value);
     }
 }
