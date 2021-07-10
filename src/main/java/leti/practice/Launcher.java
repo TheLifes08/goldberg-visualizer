@@ -12,13 +12,11 @@ public class Launcher {
         }
 
         if (isConsoleLineInterface) {
-            runCLI(args);
+            CLIController cliController = new CLIController(args);
+            cliController.startCli();
         } else {
             App.main(args);
         }
     }
 
-    public static void runCLI(String[] args) {
-
-    }
 }
