@@ -216,20 +216,10 @@ public class Controller {
     public boolean selectAndMoveNetworkNode(double x, double y) {
         if (selectedNode != null) {
             boolean result = viewPainter.setNodePosition(selectedNode, x, y);
-
-            if (result) {
-                logger.log(Level.INFO, "Set node '" + selectedNode + "' position to X=" + x + "; Y=" + y);
-            }
-
             selectedNode = null;
             return result;
         } else {
             selectedNode = viewPainter.getNodeNameByPosition(x, y);
-
-            if (selectedNode != null) {
-                logger.log(Level.INFO, "Node '" + selectedNode + "' selected.");
-            }
-
             return selectedNode == null;
         }
     }
