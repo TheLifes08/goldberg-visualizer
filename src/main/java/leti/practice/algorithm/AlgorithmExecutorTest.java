@@ -8,6 +8,61 @@ import org.junit.jupiter.api.Assertions;
 
 public class AlgorithmExecutorTest {
     @Test
+    public void nextStep() {
+        AlgorithmExecutor test_alg = new AlgorithmExecutor();
+        ResidualNetwork<Double> test_network = new ResidualNetwork<>();
+
+        test_network.setSource(new Node("a"));
+        test_network.setDestination(new Node("d"));
+        test_network.addEdge(new Node("a"),new Node("b"),new EdgeProperties<>(2.0,0.0));
+        test_network.addEdge(new Node("b"),new Node("c"),new EdgeProperties<>(13.0,0.0));
+        test_network.addEdge(new Node("c"),new Node("d"),new EdgeProperties<>(9.0,0.0));
+        test_network.addEdge(new Node("h"),new Node("c"),new EdgeProperties<>(4.0,0.0));
+        test_network.addEdge(new Node("e"),new Node("f"),new EdgeProperties<>(7.0,0.0));
+        test_network.addEdge(new Node("g"),new Node("h"),new EdgeProperties<>(7.0,0.0));
+        test_network.addEdge(new Node("b"),new Node("e"),new EdgeProperties<>(7.0,0.0));
+        test_network.addEdge(new Node("a"),new Node("g"),new EdgeProperties<>(8.0,0.0));
+        test_network.addEdge(new Node("f"),new Node("d"),new EdgeProperties<>(10.0,0.0));
+
+        test_alg.setNetwork(test_network);
+        test_alg.runAlgorithm(test_network);
+        ResidualNetwork<Double> test_network_before = test_network.copy();
+        test_alg.previousStep();
+        ResidualNetwork<Double> test_network_between = test_alg.getNetwork().copy();
+        test_alg.nextStep();
+        ResidualNetwork<Double> test_network_after = test_network.copy();
+        Assertions.assertTrue(test_network_before.equals(test_network_after));
+        Assertions.assertFalse(test_network_before.equals(test_network_between));
+    }
+
+    @Test
+    public void previousStep() {
+        AlgorithmExecutor test_alg = new AlgorithmExecutor();
+        ResidualNetwork<Double> test_network=new ResidualNetwork<>();
+        test_network.setSource(new Node("a"));
+        test_network.setDestination(new Node("h"));
+        test_network.addEdge(new Node("a"),new Node("c"),new EdgeProperties<>(12.0,0.0));
+        test_network.addEdge(new Node("a"),new Node("d"),new EdgeProperties<>(22.0,0.0));
+        test_network.addEdge(new Node("c"),new Node("d"),new EdgeProperties<>(14.0,0.0));
+        test_network.addEdge(new Node("c"),new Node("f"),new EdgeProperties<>(21.0,0.0));
+        test_network.addEdge(new Node("d"),new Node("g"),new EdgeProperties<>(10.0,0.0));
+        test_network.addEdge(new Node("g"),new Node("f"),new EdgeProperties<>(10.0,0.0));
+        test_network.addEdge(new Node("g"),new Node("h"),new EdgeProperties<>(7.0,0.0));
+        test_network.addEdge(new Node("f"),new Node("h"),new EdgeProperties<>(7.0,0.0));
+
+        test_alg.setNetwork(test_network);
+        nextStep();
+        nextStep();
+        ResidualNetwork<Double> test_network_before = test_alg.getNetwork();
+        test_alg.previousStep();
+        ResidualNetwork<Double> test_network_between = test_alg.getNetwork().copy();
+        test_alg.nextStep();
+        ResidualNetwork<Double> test_network_after = test_alg.getNetwork();
+        Assertions.assertTrue(test_network_before.equals(test_network_after));
+        Assertions.assertFalse(test_network_before.equals(test_network_between));
+    }
+
+    @Test
     public void runAlgorithm() {
         AlgorithmExecutor test_alg = new AlgorithmExecutor();
 
@@ -238,8 +293,8 @@ public class AlgorithmExecutorTest {
         } catch (NullPointerException e) {
             exceptionAppeared = true;
         }
-
         Assertions.assertTrue(exceptionAppeared);
         Assertions.assertEquals(-1,test_alg.runAlgorithm(test_network_18));
     }
+
 }
