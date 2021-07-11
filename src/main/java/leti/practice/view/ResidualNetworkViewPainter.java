@@ -15,7 +15,7 @@ public class ResidualNetworkViewPainter extends NetworkViewPainter {
     public void paint(ResidualNetwork<Double> network) {
         clearCanvas();
 
-        if (network == null) {
+        if (network == null || !isCanvasSet()) {
             return;
         }
 

@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import leti.practice.structures.graph.EdgeProperties;
 import leti.practice.structures.graph.Node;
 import leti.practice.structures.graph.ResidualNetwork;
 
@@ -28,6 +29,10 @@ public abstract class ViewPainter {
         gc.setTextAlign(TextAlignment.CENTER);
         gc.setTextBaseline(VPos.CENTER);
         gc.setFont(new Font("Arial", 10));
+    }
+
+    public Canvas getCanvas() {
+        return canvas;
     }
 
     public boolean isCanvasSet() {
@@ -53,6 +58,31 @@ public abstract class ViewPainter {
 
     public void setNeedRecalculateNodesParameters(boolean value) {
         needRecalculateNodesParameters = value;
+    }
+
+    public boolean setNodePosition(String nodeName, double x, double y) {
+        Node node = new Node(nodeName);
+
+        if (nodeViewParameters.containsKey(node)) {
+            NodeViewParameters nodeParams = nodeViewParameters.get(node);
+            nodeParams.x = x;
+            nodeParams.y = y;
+            return true;
+        }
+
+        return false;
+    }
+
+    public String getNodeNameByPosition(double x, double y) {
+        for (Node node : nodeViewParameters.keySet()) {
+            NodeViewParameters nodeParams = nodeViewParameters.get(node);
+
+            if (Math.abs(nodeParams.x - x) <= nodeSize && Math.abs(nodeParams.y - y) <= nodeSize) {
+                return node.getName();
+            }
+        }
+
+        return null;
     }
 
     public void paintNode(double x, double y, String name) {
@@ -143,11 +173,81 @@ public abstract class ViewPainter {
         gc.setStroke(originalPaint);
     }
 
+    public void paintText(double x, double y, String text) {
+        paintText(x, y, text, Color.BLACK);
+    }
+
     public void paintText(double x, double y, String text, Paint paint) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Paint originalPaint = gc.getFill();
         gc.setFill(paint);
         gc.fillText(text, x, y);
         gc.setFill(originalPaint);
+    }
+
+    protected void paintEdges(ResidualNetwork<Double> network, boolean paintReverseEdges) {
+        for (Node source : network.getNetworkNodes()) {
+            HashMap<Node, EdgeProperties<Double>> edges = network.getNetworkEdges(source);
+
+            if (edges != null) {
+                for (Node destination : edges.keySet()) {
+                    NodeViewParameters sourceParams = nodeViewParameters.get(source);
+                    NodeViewParameters destParams = nodeViewParameters.get(destination);
+                    EdgeProperties<Double> edgeParams = edges.get(destination);
+                    String info = edgeParams.getFlow() + "/" + edgeParams.getCapacity();
+
+                    if (sourceParams == null || destParams == null) {
+                        continue;
+                    }
+
+                    if (edgeParams.getFlow() > 0) {
+                        paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info,
+                                LineType.STRAIGHT, Color.BLUE);
+                    } else {
+                        paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info, LineType.STRAIGHT);
+                    }
+                }
+            }
+        }
+
+        if (!paintReverseEdges) {
+            return;
+        }
+
+        for (Node source : network.getReverseNetworkNodes()) {
+            HashMap<Node, EdgeProperties<Double>> edges = network.getReverseNetworkEdges(source);
+
+            if (edges != null) {
+                for (Node destination : edges.keySet()) {
+                    NodeViewParameters sourceParams = nodeViewParameters.get(source);
+                    NodeViewParameters destParams = nodeViewParameters.get(destination);
+                    EdgeProperties<Double> edgeParams = edges.get(destination);
+                    String info = edgeParams.getFlow() + "/" + edgeParams.getCapacity();
+
+                    if (sourceParams == null || destParams == null) {
+                        continue;
+                    }
+
+                    paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info, LineType.ARC);
+                }
+            }
+        }
+    }
+
+    protected void paintNodes(ResidualNetwork<Double> network) {
+        for (NodeViewParameters parameters : nodeViewParameters.values()) {
+            Double height = network.getSurpluses().get(parameters.node);
+            Paint color = Color.BLACK;
+
+            if (network.getSource() != null && network.getSource().equals(parameters.node)) {
+                color = Color.GREEN;
+            } else if (network.getDestination() != null && network.getDestination().equals(parameters.node)) {
+                color = Color.RED;
+            } else if (height != null && height > 0) {
+                color = Color.BLUE;
+            }
+
+            paintNode(parameters.x, parameters.y, parameters.node.getName(), color);
+        }
     }
 }

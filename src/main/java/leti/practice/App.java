@@ -1,14 +1,13 @@
 package leti.practice;
 
 import javafx.application.Application;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import leti.practice.gui.MainWindow;
+import leti.practice.logging.MessageFormatter;
 import leti.practice.logging.MessageHandler;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 
 public class App extends Application {
@@ -19,7 +18,7 @@ public class App extends Application {
 
     public static void main(String[] args) {
         messageHandler = new MessageHandler();
-        SimpleFormatter formatter = new SimpleFormatter();
+        MessageFormatter formatter = new MessageFormatter();
 
         messageHandler.setLevel(Level.ALL);
         messageHandler.setFormatter(formatter);

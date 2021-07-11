@@ -16,7 +16,7 @@ public abstract class NetworkViewPainter extends ViewPainter {
     protected void calculateNodesParameters(ResidualNetwork<Double> network) {
         nodeViewParameters.clear();
 
-        if (network == null || network.getSource() == null) {
+        if (network == null) {
             return;
         }
 
@@ -24,6 +24,27 @@ public abstract class NetworkViewPainter extends ViewPainter {
         HashSet<Node> undrawnNodes = new HashSet<>();
         undrawnNodes.addAll(network.getNetworkNodes());
         undrawnNodes.addAll(network.getReverseNetworkNodes());
+
+        if (startNode == null || !undrawnNodes.contains(startNode)) {
+            boolean fitNodeFound = false;
+
+            for (Node node : undrawnNodes) {
+                HashMap<Node, EdgeProperties<Double>> edges = network.getNetworkEdges(node);
+
+                if (edges != null && edges.size() > 0) {
+                    startNode = node;
+                    fitNodeFound = true;
+                    break;
+                }
+            }
+
+            if (!fitNodeFound) {
+                for (Node node : undrawnNodes) {
+                    startNode = node;
+                    break;
+                }
+            }
+        }
 
         while (!undrawnNodes.isEmpty()) {
             int layer = 0;
@@ -78,62 +99,6 @@ public abstract class NetworkViewPainter extends ViewPainter {
                     break;
                 }
             }
-        }
-    }
-
-    protected void paintEdges(ResidualNetwork<Double> network, boolean paintReverseEdges) {
-        for (Node source : network.getNetworkNodes()) {
-            HashMap<Node, EdgeProperties<Double>> edges = network.getNetworkEdges(source);
-
-            if (edges != null) {
-                for (Node destination : edges.keySet()) {
-                    NodeViewParameters sourceParams = nodeViewParameters.get(source);
-                    NodeViewParameters destParams = nodeViewParameters.get(destination);
-                    EdgeProperties<Double> edgeParams = edges.get(destination);
-                    String info = edgeParams.getFlow() + "/" + edgeParams.getCapacity();
-                    if (edgeParams.getFlow() > 0) {
-                        paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info,
-                                LineType.STRAIGHT, Color.BLUE);
-                    } else {
-                        paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info, LineType.STRAIGHT);
-                    }
-                }
-            }
-        }
-
-        if (!paintReverseEdges) {
-            return;
-        }
-
-        for (Node source : network.getReverseNetworkNodes()) {
-            HashMap<Node, EdgeProperties<Double>> edges = network.getReverseNetworkEdges(source);
-
-            if (edges != null) {
-                for (Node destination : edges.keySet()) {
-                    NodeViewParameters sourceParams = nodeViewParameters.get(source);
-                    NodeViewParameters destParams = nodeViewParameters.get(destination);
-                    EdgeProperties<Double> edgeParams = edges.get(destination);
-                    String info = edgeParams.getFlow() + "/" + edgeParams.getCapacity();
-                    paintEdge(sourceParams.x, sourceParams.y, destParams.x, destParams.y, info, LineType.ARC);
-                }
-            }
-        }
-    }
-
-    protected void paintNodes(ResidualNetwork<Double> network) {
-        for (NodeViewParameters parameters : nodeViewParameters.values()) {
-            Double height = network.getSurpluses().get(parameters.node);
-            Paint color = Color.BLACK;
-
-            if (network.getSource().equals(parameters.node)) {
-                color = Color.DARKBLUE;
-            } else if (network.getDestination().equals(parameters.node)) {
-                color = Color.LIGHTBLUE;
-            } else if (height != null && height > 0) {
-                color = Color.BLUE;
-            }
-
-            paintNode(parameters.x, parameters.y, parameters.node.getName(), color);
         }
     }
 }

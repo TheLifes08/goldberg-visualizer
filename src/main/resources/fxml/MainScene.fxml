@@ -62,8 +62,9 @@
                 <Button fx:id="buttonStepBackward" mnemonicParsing="false" onAction="#buttonStepBackwardPressed" text="&lt;-" />
                   <Button fx:id="buttonStepForward" mnemonicParsing="false" onAction="#buttonStepForwardPressed" text="-&gt;" />
                   <Button fx:id="buttonRunAlgorithm" mnemonicParsing="false" onAction="#buttonRunAlgorithmPressed" text="Шаги до завершения" />
-                  <Button fx:id="buttonReset" mnemonicParsing="false" text="Сброс" />
+                  <Button fx:id="buttonReset" mnemonicParsing="false" onAction="#buttonResetPressed" text="Сброс" />
                   <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" />
+                  <Button fx:id="setSourceAndDestinationButton" mnemonicParsing="false" onAction="#setSourceAndDestinationButtonPressed" text="Установить исток и сток" />
                   <Button fx:id="buttonAddEdge" mnemonicParsing="false" onAction="#buttonAddEdgePressed" text="Добавить/Изменить ребро" />
                   <Button fx:id="buttonRemoveEdge" mnemonicParsing="false" onAction="#buttonRemoveEdgePressed" text="Удалить ребро" />
                   <Button fx:id="buttonClearNetwork" mnemonicParsing="false" onAction="#buttonClearNetworkPressed" text="Очистить сеть" />

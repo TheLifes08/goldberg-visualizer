@@ -44,7 +44,7 @@ public class AlgorithmExecutor {
             throw new NullPointerException();
         }
 
-        if (network.getSource() == null && network.getDestination()==null){
+        if (network.getSource() == null || network.getDestination()==null){
             throw new NullPointerException();
         }
 
@@ -101,7 +101,10 @@ public class AlgorithmExecutor {
 
     private boolean initializeNetwork(){
         if(isNetworkCorrect){
-            logger.log(Level.FINEST, "|------------------------------|\nStart Initialization of network");
+            logger.log(Level.FINEST, "|-----------------------------------|\nStart initialization of network");
+
+            amountOfNodes.add(network.getDestination());
+            amountOfNodes.add(network.getSource());
 
             /*Initialization of heights and surplus function*/
             for (Node node:amountOfNodes){
@@ -111,7 +114,6 @@ public class AlgorithmExecutor {
 
             network.getHeights().put(network.getSource(), amountOfNodes.size());
             //add to the states
-            networkStates.add(network.copy());
             /*First algorithm step*/
             HashMap<Node, EdgeProperties<Double>> sourceEdges = network.getNetworkEdges(network.getSource());
 
@@ -119,10 +121,10 @@ public class AlgorithmExecutor {
                 for (Node to : network.getNetworkEdges(network.getSource()).keySet()) {
                     //add flow to edge
                     network.getNetworkEdges(network.getSource()).get(to).setFlow(network.getNetworkEdges(network.getSource()).get(to).getCapacity());
-                    logger.log(Level.FINEST, "Push flow though edge " + network.getSource().getName() + " " + to.getName() + " flow is " + network.getNetworkEdges(network.getSource()).get(to).getCapacity());
+                    logger.log(Level.FINEST, "Push flow though edge '" + network.getSource().getName() + "' '" + to.getName() + "' flow is " + network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                     //add surplus to the node
                     network.getSurpluses().put(to, network.getNetworkEdges(network.getSource()).get(to).getCapacity());
-                    logger.log(Level.FINEST, "Surplus of node " + to.getName() + " is " + network.getSurpluses().get(to));
+                    logger.log(Level.FINEST, "Surplus of node '" + to.getName() + "' is " + network.getSurpluses().get(to));
                     //add flow to the reverse edge
                     network.getReverseNetworkEdges(to).get(network.getSource()).setFlow(-1 * network.getNetworkEdges(network.getSource()).get(to).getCapacity());
                 }
@@ -130,7 +132,7 @@ public class AlgorithmExecutor {
 
             amountOfNodes.remove(network.getDestination());
             amountOfNodes.remove(network.getSource());
-            logger.log(Level.FINEST, "End Initialization of network\n|------------------------------|");
+            logger.log(Level.FINEST, "End initialization of network\n|-----------------------------------|");
             return true;
         }
 
@@ -148,16 +150,16 @@ public class AlgorithmExecutor {
                             if(network.getReverseNetworkEdges(node).get(to).getFlow()< 0.0){
                                 if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
                                     logger.log(Level.FINEST, "|-----------------------------------|");
-                                    logger.log(Level.FINEST, "Make push with node " + node.getName());
+                                    logger.log(Level.FINEST, "Make push with node '" + node.getName() +"'");
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getReverseNetworkEdges(node).get(to).getCapacity() - network.getReverseNetworkEdges(node).get(to).getFlow());
                                     network.getReverseNetworkEdges(node).get(to).setFlow(network.getReverseNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge "+node.getName()+" "+to.getName());
+                                    logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge '"+node.getName()+"' '"+to.getName() + "'");
                                     network.getNetworkEdges(to).get(node).setFlow(network.getNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Flow of edge "+to.getName()+" "+ node.getName()+" is "+network.getNetworkEdges(to).get(node).getFlow());
+                                    logger.log(Level.FINEST, "Flow of edge '"+to.getName()+"' '"+ node.getName()+"' is "+network.getNetworkEdges(to).get(node).getFlow());
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Surplus of node "+node.getName()+" is "+network.getSurpluses().get(node));
+                                    logger.log(Level.FINEST, "Surplus of node '"+node.getName()+"' is "+network.getSurpluses().get(node));
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Surplus of node "+to.getName()+" is "+network.getSurpluses().get(to));
+                                    logger.log(Level.FINEST, "Surplus of node '"+to.getName()+"' is "+network.getSurpluses().get(to));
                                     logger.log(Level.FINEST, "|-----------------------------------|");
                                     return true;
                                 }
@@ -171,16 +173,16 @@ public class AlgorithmExecutor {
                             if(network.getNetworkEdges(node).get(to).getCapacity() - network.getNetworkEdges(node).get(to).getFlow() > 0.0){
                                 if(network.getHeights().get(node) == network.getHeights().get(to) + 1){
                                     logger.log(Level.FINEST, "|-----------------------------------|");
-                                    logger.log(Level.FINEST, "Make push with node " + node.getName());
+                                    logger.log(Level.FINEST, "Make push with node '" + node.getName() + "'");
                                     double availableAmountOfFlow = Math.min(network.getSurpluses().get(node), network.getNetworkEdges(node).get(to).getCapacity() - network.getNetworkEdges(node).get(to).getFlow());
                                     network.getNetworkEdges(node).get(to).setFlow(network.getNetworkEdges(node).get(to).getFlow() + availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge "+node.getName()+" "+to.getName());
+                                    logger.log(Level.FINEST, "Add flow " + availableAmountOfFlow + " to the Edge '"+node.getName()+"' '"+to.getName() + "'");
                                     network.getReverseNetworkEdges(to).get(node).setFlow(network.getReverseNetworkEdges(to).get(node).getFlow() - availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Flow of reverse edge "+to.getName()+" "+ node.getName()+" is "+network.getReverseNetworkEdges(to).get(node).getFlow());
+                                    logger.log(Level.FINEST, "Flow of reverse edge '"+to.getName()+"' '"+ node.getName()+"' is "+network.getReverseNetworkEdges(to).get(node).getFlow());
                                     network.getSurpluses().put(node, network.getSurpluses().get(node) - availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Surplus of node "+node.getName()+" is "+network.getSurpluses().get(node));
+                                    logger.log(Level.FINEST, "Surplus of node '"+node.getName()+"' is "+network.getSurpluses().get(node));
                                     network.getSurpluses().put(to, network.getSurpluses().get(to) + availableAmountOfFlow);
-                                    logger.log(Level.FINEST, "Surplus of node "+to.getName()+" is "+network.getSurpluses().get(to));
+                                    logger.log(Level.FINEST, "Surplus of node '"+to.getName()+"' is "+network.getSurpluses().get(to));
                                     logger.log(Level.FINEST, "|-----------------------------------|");
                                     return true;
                                 }
@@ -200,12 +202,11 @@ public class AlgorithmExecutor {
                 //Если переполнение
                 boolean flag = false;
 
-                if (network.getSurpluses().get(node) > 0) {
-                    if(network.getNetworkNodes().contains(node)){
-                        ArrayList<Integer> heights = new ArrayList<>();
-
-                        for(Node to :network.getNetworkEdges(node).keySet()){
-                            if(!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
+                if (network.getSurpluses().get(node) > 0){
+                    ArrayList<Integer> heights = new ArrayList<>();
+                    if(network.getNetworkNodes().contains(node)) {
+                        for (Node to : network.getNetworkEdges(node).keySet()) {
+                            if (!network.getNetworkEdges(node).get(to).getCapacity().equals(network.getNetworkEdges(node).get(to).getFlow())) {
                                 if (network.getHeights().get(node) > network.getHeights().get(to)) {
                                     flag = true;
                                     break;
@@ -214,8 +215,9 @@ public class AlgorithmExecutor {
                                 heights.add(network.getHeights().get(to));
                             }
                         }
-
-                        if(network.getReverseNetworkNodes().contains(node) && !flag){
+                    }
+                    if(network.getReverseNetworkNodes().contains(node)){
+                        if(network.getReverseNetworkNodes().contains(node)){
                             for (Node to : network.getReverseNetworkEdges(node).keySet()){
                                 if(!network.getReverseNetworkEdges(node).get(to).getFlow().equals(network.getReverseNetworkEdges(node).get(to).getCapacity())) {
                                     if (network.getHeights().get(node) > network.getHeights().get(to)) {
@@ -228,17 +230,17 @@ public class AlgorithmExecutor {
 
                             }
                         }
-
-                        if(!flag){
-                            logger.log(Level.FINEST, "|-----------------------------------|");
-                            logger.log(Level.FINEST, "Make relabel with node " + node.getName());
-                            logger.log(Level.FINEST, "Height of node " + node.getName()+" was "+network.getHeights().get(node));
-                            network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
-                            logger.log(Level.FINEST, "Height of node " + node.getName()+" is "+network.getHeights().get(node));
-                            logger.log(Level.FINEST, "|-----------------------------------|");
-                            return true;
-                        }
                     }
+                    if(!flag){
+                        logger.log(Level.FINEST, "|-----------------------------------|");
+                        logger.log(Level.FINEST, "Make relabel with node '" + node.getName() + "'");
+                        logger.log(Level.FINEST, "Height of node '" + node.getName()+"' was '"+network.getHeights().get(node));
+                        network.getHeights().put(node, 1+Math.min(network.getHeights().get(node), Collections.min(heights)));
+                        logger.log(Level.FINEST, "Height of node '" + node.getName()+"' is "+network.getHeights().get(node));
+                        logger.log(Level.FINEST, "|-----------------------------------|");
+                        return true;
+                    }
+
                 }
             }
         }
@@ -248,29 +250,32 @@ public class AlgorithmExecutor {
 
     public boolean nextStep(){
         if(isNetworkCorrect && !isAlgorithmEnd) {
-            if(stepOfAlgorithm == 0){
-                stepOfAlgorithm++;
-                return initializeNetwork();
+            ResidualNetwork<Double> previousNetwork = network.copy();
+
+            if (networkStates.size() == 0){
+                if (initializeNetwork()) {
+                    networkStates.add(previousNetwork.copy());
+                    return true;
+                }
+                return false;
             }
 
-            networkStates.add(network.copy());
-
             if (relabel()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork.copy());
                 return true;
             }
 
             if (push()) {
-                stepOfAlgorithm++;
+                networkStates.add(previousNetwork.copy());
                 return true;
             }
 
             isAlgorithmEnd = true;
-            logger.log(Level.FINEST, "END ALGORITHM");
+            logger.log(Level.FINEST, "The algorithm is completed");
         }
 
         if (!isNetworkCorrect) {
-            logger.log(Level.FINEST, "NETWORK ISNT CORRECT");
+            logger.log(Level.FINEST, "The network is incorrect");
         }
 
         return false;
@@ -282,16 +287,11 @@ public class AlgorithmExecutor {
                 if (isAlgorithmEnd) {
                     isAlgorithmEnd = false;
                 }
-
-                network = null;
                 network = networkStates.get(networkStates.size() - 1);
                 networkStates.remove(networkStates.size() - 1);
-                stepOfAlgorithm--;
-
                 return true;
             }
         }
-
         return false;
     }
 

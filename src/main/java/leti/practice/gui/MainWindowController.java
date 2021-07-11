@@ -1,15 +1,18 @@
 package leti.practice.gui;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
+import javafx.util.Duration;
 import leti.practice.Controller;
 import leti.practice.commands.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +22,7 @@ public class MainWindowController {
     private HashMap<CommandType, Command> commands;
     private ViewType viewType = ViewType.RESIDUAL_NETWORK;
     private boolean intermediateMessagesEnabled = true;
+    private AtomicBoolean isAnimationExecuting;
 
     @FXML
     private TextArea console;
@@ -30,6 +34,27 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         commands = new HashMap<CommandType, Command>();
+        isAnimationExecuting = new AtomicBoolean(false);
+
+        canvas.setOnMousePressed(event -> {
+            SelectAndMoveNodeCommand command = (SelectAndMoveNodeCommand)
+                    commands.get(CommandType.SELECT_AND_MOVE_NODE);
+
+            command.setX(Math.max(event.getX(), 0.0));
+            command.setY(Math.max(event.getY(), 0.0));
+            command.execute();
+            updateNetworkViewAndParameters();
+        });
+
+        canvas.setOnMouseReleased(event -> {
+            SelectAndMoveNodeCommand command = (SelectAndMoveNodeCommand)
+                    commands.get(CommandType.SELECT_AND_MOVE_NODE);
+
+            command.setX(Math.max(event.getX(), 0.0));
+            command.setY(Math.max(event.getY(), 0.0));
+            command.execute();
+            updateNetworkViewAndParameters();
+        });
     }
 
     public void setMainWindow(MainWindow mainWindow) {
@@ -57,10 +82,14 @@ public class MainWindowController {
         commands.put(CommandType.SET_VIEW_HEIGHT_FUNCTION, new SetViewCommand(controller, ViewType.HEIGHT_FUNCTION));
         commands.put(CommandType.STEP_FORWARD, new StepForwardCommand(controller));
         commands.put(CommandType.STEP_BACKWARD, new StepBackwardCommand(controller));
+        commands.put(CommandType.RESET, new ResetCommand(controller));
+        commands.put(CommandType.SET_SOURCE_AND_DESTINATION, new SetSourceAndDestinationCommand(controller));
+        commands.put(CommandType.CHECK_SOURCE_AND_DESTINATION, new CheckSourceAndDestinationCommand(controller));
+        commands.put(CommandType.SELECT_AND_MOVE_NODE, new SelectAndMoveNodeCommand(controller));
         updateNetworkViewAndParameters();
     }
 
-    void updateNetworkViewAndParameters() {
+    public void updateNetworkViewAndParameters() {
         GetNetworkParametersCommand getParametersCommand = (GetNetworkParametersCommand) commands.get(
                 CommandType.GET_NETWORK_PARAMETERS);
         commands.get(CommandType.PAINT_VIEW).execute();
@@ -70,6 +99,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonLoadPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         File file = mainWindow.showFileDialog(FileDialogType.LOAD);
 
         if (file != null) {
@@ -155,6 +188,8 @@ public class MainWindowController {
                 Button '<-': Go back to the previous step of the algorithm.
                 Button '->': Perform the next step of the algorithm.
                 Button 'Steps to the finish': Run the algorithm until it is completed.
+                Button 'Reset': Reset the algorithm to its original state.
+                Button 'Set the source and destination': Set the source and destination for the network.
                 Button 'Add edge': Add an edge to the network.
                 Button 'Remove edge': Remove an edge from the network.
                 Button 'Clear network': Clears the network.
@@ -172,40 +207,160 @@ public class MainWindowController {
     }
 
     @FXML
+    private void setSourceAndDestinationButtonPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
+        Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
+                "Enter source and destination (<source> <destination>):");
+
+        if (answer.isPresent()) {
+            SetSourceAndDestinationCommand setSourceAndDestinationCommand =
+                    (SetSourceAndDestinationCommand) commands.get(CommandType.SET_SOURCE_AND_DESTINATION);
+            String input = answer.get();
+
+            boolean success = true;
+            int firstSpaceIndex = input.indexOf(' ');
+
+            try {
+                if (firstSpaceIndex != -1) {
+                    String source = input.substring(0, firstSpaceIndex);
+                    String destination = input.substring(firstSpaceIndex + 1);
+                    setSourceAndDestinationCommand.setSource(source);
+                    setSourceAndDestinationCommand.setDestination(destination);
+                    success = setSourceAndDestinationCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error setting source and destination.");
+                return;
+            }
+
+            updateNetworkViewAndParameters();
+        }
+    }
+
+    @FXML
     private void buttonStepBackwardPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         commands.get(CommandType.STEP_BACKWARD).execute();
         updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonStepForwardPressed() {
-        commands.get(CommandType.STEP_FORWARD).execute();
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
+        boolean isSourceAndDestinationSet = commands.get(CommandType.CHECK_SOURCE_AND_DESTINATION).execute();
+
+        if (!isSourceAndDestinationSet) {
+            mainWindow.showError("The source or destination is set incorrectly.");
+            return;
+        }
+
+        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
+
+        stepForwardCommand.execute();
         updateNetworkViewAndParameters();
+
+        switch (stepForwardCommand.getResult()) {
+            case END_ALGORITHM -> {
+                mainWindow.showDialog(Alert.AlertType.INFORMATION,
+                        "Information Dialog", "The work of the algorithm is completed.",
+                        "Maximum network flow: " + stepForwardCommand.getAlgorithmResult());
+            }
+            case INCORRECT_NETWORK -> {
+                mainWindow.showError("The network is incorrect.");
+            }
+            case ERROR -> mainWindow.showError("Unknown error occurred.");
+        }
     }
 
     @FXML
     private void buttonRunAlgorithmPressed() {
-        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
-        boolean stepResult;
+        boolean isSourceAndDestinationSet = commands.get(CommandType.CHECK_SOURCE_AND_DESTINATION).execute();
 
-        do {
-            stepResult = stepForwardCommand.execute();
+        if (!isSourceAndDestinationSet) {
+            mainWindow.showError("The source or destination is set incorrectly.");
+            return;
+        }
+
+        isAnimationExecuting.set(true);
+
+        StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+        pause.setOnFinished(event -> {
+            boolean stepResult = stepForwardCommand.execute();
             updateNetworkViewAndParameters();
-        } while (stepResult);
+
+            if (stepResult) {
+                pause.play();
+            } else {
+                isAnimationExecuting.set(false);
+            }
+        });
+        pause.play();
     }
 
     @FXML
-    private void buttonReset() {
+    private void buttonResetPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
 
+        Command command = commands.get(CommandType.RESET);
+        command.execute();
+        updateNetworkViewAndParameters();
     }
 
     @FXML
     private void buttonAddEdgePressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter edge (<source> <destination> <capacity>):");
 
         if (answer.isPresent()) {
+            AddEdgeCommand addEdgeCommand = (AddEdgeCommand) commands.get(CommandType.ADD_EDGE);
             String input = answer.get();
+
+            boolean success = true;
+            int firstSpaceIndex = input.indexOf(' ');
+            int secondSpaceIndex = input.lastIndexOf(' ');
+
+            try {
+                if (firstSpaceIndex != -1 && secondSpaceIndex != -1) {
+                    String source = input.substring(0, firstSpaceIndex);
+                    String destination = input.substring(firstSpaceIndex + 1, secondSpaceIndex);
+                    Double capacity = Double.valueOf(input.substring(secondSpaceIndex + 1));
+                    addEdgeCommand.setSource(source);
+                    addEdgeCommand.setDestination(destination);
+                    addEdgeCommand.setCapacity(capacity);
+                    addEdgeCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error adding an edge: Invalid format.");
+                return;
+            }
 
             updateNetworkViewAndParameters();
         }
@@ -213,11 +368,38 @@ public class MainWindowController {
 
     @FXML
     private void buttonRemoveEdgePressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         Optional<String> answer = mainWindow.showTextInputDialog("Input Dialog", null,
                 "Enter edge (<source> <destination>):");
 
         if (answer.isPresent()) {
+            RemoveEdgeCommand removeEdgeCommand = (RemoveEdgeCommand) commands.get(CommandType.REMOVE_EDGE);
             String input = answer.get();
+
+            boolean success = true;
+            int spaceIndex = input.indexOf(' ');
+
+            try {
+                if (spaceIndex != -1) {
+                    String source = input.substring(0, spaceIndex);
+                    String destination = input.substring(spaceIndex + 1);
+                    removeEdgeCommand.setSource(source);
+                    removeEdgeCommand.setDestination(destination);
+                    removeEdgeCommand.execute();
+                } else {
+                    success = false;
+                }
+            } catch (Exception e) {
+                success = false;
+            }
+
+            if (!success) {
+                mainWindow.showError("Error removing an edge: Invalid format.");
+                return;
+            }
 
             updateNetworkViewAndParameters();
         }
@@ -225,6 +407,10 @@ public class MainWindowController {
 
     @FXML
     private void buttonClearNetworkPressed() {
+        if (isAnimationExecuting.get()) {
+            return;
+        }
+
         commands.get(CommandType.CLEAR_NETWORK).execute();
         updateNetworkViewAndParameters();
     }
