@@ -23,6 +23,7 @@ public class OriginalNetworkViewPainter extends NetworkViewPainter {
             layersNodeCount.ensureCapacity(network.getNetworkNodes().size());
             calculateNodesParameters(network);
             layersNodeCount.clear();
+            needRecalculateNodesParameters = false;
         }
 
         paintEdges(network, false);
