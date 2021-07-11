@@ -15,7 +15,11 @@ public class Launcher {
             ConsoleController consoleController = new ConsoleController();
             consoleController.run(args);
         } else {
-            App.main(args);
+            try {
+                App.main(args);
+            } catch (NoClassDefFoundError e) {
+                System.out.println("If you want to call the CLI, add the '-cli' flag.");
+            }
         }
     }
 
