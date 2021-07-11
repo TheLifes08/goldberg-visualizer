@@ -287,17 +287,11 @@ public class AlgorithmExecutor {
                 if (isAlgorithmEnd) {
                     isAlgorithmEnd = false;
                 }
-
                 network = networkStates.get(networkStates.size() - 1);
                 networkStates.remove(networkStates.size() - 1);
-
-                network.printNetwork();
-                System.out.println(networkStates.size());
-
                 return true;
             }
         }
-
         return false;
     }
 
