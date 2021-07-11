@@ -89,7 +89,7 @@ public class MainWindowController {
         updateNetworkViewAndParameters();
     }
 
-    void updateNetworkViewAndParameters() {
+    public void updateNetworkViewAndParameters() {
         GetNetworkParametersCommand getParametersCommand = (GetNetworkParametersCommand) commands.get(
                 CommandType.GET_NETWORK_PARAMETERS);
         commands.get(CommandType.PAINT_VIEW).execute();
@@ -299,7 +299,7 @@ public class MainWindowController {
         isAnimationExecuting.set(true);
 
         StepForwardCommand stepForwardCommand = (StepForwardCommand) commands.get(CommandType.STEP_FORWARD);
-        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
         pause.setOnFinished(event -> {
             boolean stepResult = stepForwardCommand.execute();
             updateNetworkViewAndParameters();
